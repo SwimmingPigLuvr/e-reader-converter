@@ -260,8 +260,8 @@
     /* E-ink screen - LARGE */
     .eink-screen {
       position: relative;
-      width: 288px;  /* 480 * 0.6 */
-      height: 480px; /* 800 * 0.6 */
+      width: 288px;  /* Display size */
+      height: 480px;
       border-radius: 3px;
       overflow: hidden;
       /* E-ink paper color - slightly warm/gray off-white */
@@ -285,10 +285,9 @@
 
     .preview-canvas {
       display: block;
+      /* Canvas is full 480x800 resolution, CSS scales display size */
       width: 288px;
       height: 480px;
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
       /* GRAYSCALE - e-ink has no color! Plus slight contrast reduction for realism */
       filter: grayscale(100%) contrast(0.9);
     }
@@ -451,7 +450,7 @@
             </div>
             <div class="device-frame black" id="deviceFrame">
               <div class="eink-screen">
-                <canvas class="preview-canvas" id="previewCanvas" width="288" height="480"></canvas>
+                <canvas class="preview-canvas" id="previewCanvas" width="480" height="800"></canvas>
               </div>
             </div>
             <div class="device-specs">
@@ -465,7 +464,6 @@
 
   <script>
     const WIDTH = 480, HEIGHT = 800;
-    const PREVIEW_W = 288, PREVIEW_H = 480;
 
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileInput');
@@ -670,8 +668,8 @@
       applyPosterize(imageData, posterizeSelect.value);
       fullCtx.putImageData(imageData, 0, 0);
 
-      previewCtx.imageSmoothingEnabled = false;
-      previewCtx.drawImage(fullCanvas, 0, 0, PREVIEW_W, PREVIEW_H);
+      // Draw at full resolution - CSS handles display scaling
+      previewCtx.drawImage(fullCanvas, 0, 0);
     }
 
     fitSelect.onchange = () => { saveCurrentSettings(); updatePreview(); };
