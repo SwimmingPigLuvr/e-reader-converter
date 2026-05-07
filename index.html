@@ -11,7 +11,7 @@
       background: #111; color: #eee;
       min-height: 100vh; padding: 20px;
     }
-    .container { max-width: 1200px; margin: 0 auto; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
     h1 { font-size: 1.5rem; margin-bottom: 10px; text-align: center; }
     .info { font-size: 0.85rem; color: #888; margin-bottom: 20px; text-align: center; }
 
@@ -49,14 +49,19 @@
       align-items: flex-start;
     }
 
-    /* Left column: controls */
+    /* Left column: controls - takes left half */
     .left-column {
-      flex: 1; min-width: 320px; max-width: 420px;
+      flex: 1;
+      min-width: 0;
+      max-width: 50%;
     }
 
-    /* Right column: device mockup */
+    /* Right column: device mockup - takes right half, device centered */
     .right-column {
-      flex: 0 0 auto;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
       position: sticky;
       top: 20px;
     }
@@ -307,12 +312,11 @@
       .right-column {
         position: static;
         width: 100%;
-        display: flex;
-        justify-content: center;
-        margin-bottom: 20px;
+        margin-bottom: 24px;
       }
       .left-column {
         max-width: 100%;
+        width: 100%;
       }
     }
   </style>
