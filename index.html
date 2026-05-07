@@ -1,62 +1,632 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="cyber">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>E-Reader Image Converter</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #111; color: #eee;
-      min-height: 100vh; padding: 20px;
+    /* =============================================
+       THEME SYSTEM - CSS Custom Properties
+       ============================================= */
+    :root {
+      /* Base structure */
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
-    h1 { font-size: 1.5rem; margin-bottom: 10px; text-align: center; }
-    .info { font-size: 0.85rem; color: #888; margin-bottom: 20px; text-align: center; }
 
-    .dropzone {
-      border: 2px dashed #444; border-radius: 12px;
-      padding: 40px 20px; text-align: center;
-      cursor: pointer; margin-bottom: 20px;
-      transition: border-color 0.2s, background 0.2s;
+    /* THEME 1: CYBER - Neon on dark */
+    [data-theme="cyber"] {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-tertiary: #1a1a25;
+      --bg-hover: #22222f;
+      --text-primary: #e0e0e8;
+      --text-secondary: #8888a0;
+      --text-muted: #555566;
+      --accent: #00f0ff;
+      --accent-secondary: #ff00aa;
+      --accent-glow: rgba(0, 240, 255, 0.4);
+      --border: #2a2a3a;
+      --border-focus: var(--accent);
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 30px var(--accent-glow);
+      --gradient: linear-gradient(135deg, var(--accent), var(--accent-secondary));
     }
-    .dropzone:hover { border-color: #666; }
-    .dropzone.dragover { border-color: #fff; background: #222; }
-    .dropzone.minimized { padding: 12px; margin-bottom: 16px; }
-    .dropzone.minimized p { font-size: 0.85rem; }
+
+    /* THEME 2: MINIMAL - Swiss design */
+    [data-theme="minimal"] {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f5f5f5;
+      --bg-tertiary: #ebebeb;
+      --bg-hover: #e0e0e0;
+      --text-primary: #111111;
+      --text-secondary: #555555;
+      --text-muted: #999999;
+      --accent: #000000;
+      --accent-secondary: #333333;
+      --accent-glow: rgba(0, 0, 0, 0.1);
+      --border: #dddddd;
+      --border-focus: #000000;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      --shadow-glow: none;
+      --gradient: linear-gradient(135deg, #333, #000);
+    }
+
+    /* THEME 3: SYNTHWAVE - 80s retro */
+    [data-theme="synthwave"] {
+      --bg-primary: #1a1025;
+      --bg-secondary: #241535;
+      --bg-tertiary: #2e1a42;
+      --bg-hover: #3a2255;
+      --text-primary: #f0e0ff;
+      --text-secondary: #b090d0;
+      --text-muted: #705090;
+      --accent: #ff71ce;
+      --accent-secondary: #01cdfe;
+      --accent-glow: rgba(255, 113, 206, 0.4);
+      --border: #4a2a6a;
+      --border-focus: var(--accent);
+      --shadow: 0 4px 30px rgba(255, 113, 206, 0.2);
+      --shadow-glow: 0 0 40px rgba(255, 113, 206, 0.3);
+      --gradient: linear-gradient(135deg, #ff71ce, #01cdfe);
+    }
+
+    /* THEME 4: NEUMORPHIC - Soft tactile */
+    [data-theme="neumorphic"] {
+      --bg-primary: #e0e5ec;
+      --bg-secondary: #e0e5ec;
+      --bg-tertiary: #e0e5ec;
+      --bg-hover: #d0d5dc;
+      --text-primary: #2d3748;
+      --text-secondary: #5a6a7a;
+      --text-muted: #8a9aaa;
+      --accent: #6366f1;
+      --accent-secondary: #8b5cf6;
+      --accent-glow: rgba(99, 102, 241, 0.3);
+      --border: transparent;
+      --border-focus: var(--accent);
+      --shadow: 8px 8px 16px #b8bcc2, -8px -8px 16px #ffffff;
+      --shadow-glow: inset 4px 4px 8px #b8bcc2, inset -4px -4px 8px #ffffff;
+      --gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+    }
+
+    /* THEME 5: GLASS - Frosted glass */
+    [data-theme="glass"] {
+      --bg-primary: rgba(15, 15, 25, 0.95);
+      --bg-secondary: rgba(255, 255, 255, 0.05);
+      --bg-tertiary: rgba(255, 255, 255, 0.08);
+      --bg-hover: rgba(255, 255, 255, 0.12);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --text-muted: rgba(255, 255, 255, 0.4);
+      --accent: #60a5fa;
+      --accent-secondary: #a78bfa;
+      --accent-glow: rgba(96, 165, 250, 0.3);
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: var(--accent);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      --shadow-glow: 0 0 30px var(--accent-glow);
+      --gradient: linear-gradient(135deg, #60a5fa, #a78bfa);
+      --glass-blur: blur(20px);
+    }
+
+    /* THEME 6: TERMINAL - Hacker green */
+    [data-theme="terminal"] {
+      --bg-primary: #0d0d0d;
+      --bg-secondary: #141414;
+      --bg-tertiary: #1a1a1a;
+      --bg-hover: #222222;
+      --text-primary: #00ff00;
+      --text-secondary: #00cc00;
+      --text-muted: #007700;
+      --accent: #00ff00;
+      --accent-secondary: #00ff88;
+      --accent-glow: rgba(0, 255, 0, 0.3);
+      --border: #00ff0033;
+      --border-focus: var(--accent);
+      --shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+      --shadow-glow: 0 0 30px rgba(0, 255, 0, 0.2);
+      --gradient: linear-gradient(135deg, #00ff00, #00ff88);
+      --font-main: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    /* THEME 7: BRUTALIST - Raw and bold */
+    [data-theme="brutalist"] {
+      --bg-primary: #f0f0f0;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #e0e0e0;
+      --bg-hover: #d0d0d0;
+      --text-primary: #000000;
+      --text-secondary: #333333;
+      --text-muted: #666666;
+      --accent: #ff0000;
+      --accent-secondary: #0000ff;
+      --accent-glow: none;
+      --border: #000000;
+      --border-focus: #ff0000;
+      --shadow: 4px 4px 0 #000000;
+      --shadow-glow: none;
+      --gradient: none;
+      --radius-sm: 0;
+      --radius-md: 0;
+      --radius-lg: 0;
+    }
+
+    /* THEME 8: VAPOR - Pastel aesthetic */
+    [data-theme="vapor"] {
+      --bg-primary: #ffe6f0;
+      --bg-secondary: #fff0f5;
+      --bg-tertiary: #ffe0eb;
+      --bg-hover: #ffd6e6;
+      --text-primary: #4a3050;
+      --text-secondary: #7a5080;
+      --text-muted: #aa80b0;
+      --accent: #ff71ce;
+      --accent-secondary: #7ee8fa;
+      --accent-glow: rgba(255, 113, 206, 0.3);
+      --border: #ffb0d0;
+      --border-focus: var(--accent);
+      --shadow: 0 4px 20px rgba(255, 113, 206, 0.2);
+      --shadow-glow: 0 0 30px rgba(126, 232, 250, 0.2);
+      --gradient: linear-gradient(135deg, #ff71ce, #7ee8fa, #feff9c);
+    }
+
+    /* THEME 9: LUXURY - Gold on dark */
+    [data-theme="luxury"] {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #111111;
+      --bg-tertiary: #1a1a1a;
+      --bg-hover: #222222;
+      --text-primary: #f5f5f5;
+      --text-secondary: #aaaaaa;
+      --text-muted: #666666;
+      --accent: #d4af37;
+      --accent-secondary: #f4cf67;
+      --accent-glow: rgba(212, 175, 55, 0.3);
+      --border: #333333;
+      --border-focus: var(--accent);
+      --shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 40px rgba(212, 175, 55, 0.2);
+      --gradient: linear-gradient(135deg, #d4af37, #f4cf67);
+    }
+
+    /* THEME 10: PAPER - E-ink inspired */
+    [data-theme="paper"] {
+      --bg-primary: #f8f6f1;
+      --bg-secondary: #eeeae3;
+      --bg-tertiary: #e4e0d9;
+      --bg-hover: #dad6cf;
+      --text-primary: #2c2c2c;
+      --text-secondary: #5c5c5c;
+      --text-muted: #8c8c8c;
+      --accent: #2c2c2c;
+      --accent-secondary: #4c4c4c;
+      --accent-glow: rgba(44, 44, 44, 0.1);
+      --border: #ccc8c0;
+      --border-focus: #2c2c2c;
+      --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      --shadow-glow: none;
+      --gradient: linear-gradient(135deg, #3c3c3c, #2c2c2c);
+    }
+
+    /* =============================================
+       BASE STYLES
+       ============================================= */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 20px;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* =============================================
+       HEADER & THEME SWITCHER
+       ============================================= */
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    [data-theme="brutalist"] h1,
+    [data-theme="paper"] h1,
+    [data-theme="minimal"] h1 {
+      background: none;
+      -webkit-text-fill-color: var(--text-primary);
+    }
+
+    .info {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .theme-switcher {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      padding: 16px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    .theme-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .theme-btn:hover {
+      transform: scale(1.15);
+    }
+
+    .theme-btn.active {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .theme-btn[data-theme="cyber"] { background: linear-gradient(135deg, #0a0a0f, #00f0ff); }
+    .theme-btn[data-theme="minimal"] { background: linear-gradient(135deg, #fff, #000); }
+    .theme-btn[data-theme="synthwave"] { background: linear-gradient(135deg, #1a1025, #ff71ce); }
+    .theme-btn[data-theme="neumorphic"] { background: linear-gradient(135deg, #e0e5ec, #6366f1); }
+    .theme-btn[data-theme="glass"] { background: linear-gradient(135deg, #0f0f19, #60a5fa); }
+    .theme-btn[data-theme="terminal"] { background: linear-gradient(135deg, #0d0d0d, #00ff00); }
+    .theme-btn[data-theme="brutalist"] { background: linear-gradient(135deg, #f0f0f0, #ff0000); }
+    .theme-btn[data-theme="vapor"] { background: linear-gradient(135deg, #ffe6f0, #ff71ce); }
+    .theme-btn[data-theme="luxury"] { background: linear-gradient(135deg, #0a0a0a, #d4af37); }
+    .theme-btn[data-theme="paper"] { background: linear-gradient(135deg, #f8f6f1, #2c2c2c); }
+
+    .theme-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    /* =============================================
+       DROPZONE
+       ============================================= */
+    .dropzone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 24px;
+      transition: all var(--transition);
+      background: var(--bg-secondary);
+    }
+
+    .dropzone:hover {
+      border-color: var(--accent);
+      background: var(--bg-tertiary);
+    }
+
+    .dropzone.dragover {
+      border-color: var(--accent);
+      background: var(--bg-hover);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .dropzone.minimized {
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .dropzone p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+
+    .dropzone-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
     input[type="file"] { display: none; }
 
+    /* =============================================
+       CUSTOM BUTTONS
+       ============================================= */
     .btn {
-      display: inline-block; padding: 10px 16px;
-      background: #333; color: #fff; border: none;
-      border-radius: 8px; font-size: 0.9rem; cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-main);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition);
     }
-    .btn:hover { background: #444; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-primary { background: #2a6; }
-    .btn-primary:hover { background: #3b7; }
-    .btn-danger { background: #a33; }
-    .btn-danger:hover { background: #c44; }
-    .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
 
-    /* Editor - Two column layout */
+    .btn:hover {
+      background: var(--bg-hover);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-primary {
+      background: var(--gradient);
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+    }
+
+    [data-theme="minimal"] .btn-primary,
+    [data-theme="brutalist"] .btn-primary,
+    [data-theme="paper"] .btn-primary {
+      background: var(--accent);
+    }
+
+    .btn-primary:hover {
+      box-shadow: var(--shadow-glow);
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      border-color: #dc2626;
+      color: #fff;
+    }
+
+    .btn-sm {
+      padding: 8px 14px;
+      font-size: 0.8rem;
+    }
+
+    /* =============================================
+       CUSTOM SELECT DROPDOWN
+       ============================================= */
+    .select-wrapper {
+      position: relative;
+    }
+
+    .select-wrapper::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--text-secondary);
+      pointer-events: none;
+    }
+
+    .custom-select {
+      width: 100%;
+      padding: 14px 40px 14px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      font-size: 0.9rem;
+      cursor: pointer;
+      appearance: none;
+      transition: all var(--transition);
+    }
+
+    .custom-select:hover {
+      border-color: var(--text-muted);
+    }
+
+    .custom-select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    /* =============================================
+       CUSTOM SLIDER
+       ============================================= */
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .custom-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      flex: 1;
+      height: 6px;
+      background: var(--bg-tertiary);
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .custom-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: var(--gradient);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: all var(--transition);
+    }
+
+    [data-theme="minimal"] .custom-slider::-webkit-slider-thumb,
+    [data-theme="brutalist"] .custom-slider::-webkit-slider-thumb,
+    [data-theme="paper"] .custom-slider::-webkit-slider-thumb {
+      background: var(--accent);
+    }
+
+    .custom-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .custom-slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      background: var(--gradient);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .slider-value {
+      min-width: 48px;
+      padding: 6px 10px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* =============================================
+       CUSTOM TEXT INPUT
+       ============================================= */
+    .custom-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      transition: all var(--transition);
+    }
+
+    .custom-input:hover {
+      border-color: var(--text-muted);
+    }
+
+    .custom-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    /* =============================================
+       PANELS & CARDS
+       ============================================= */
+    .panel {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      transition: all var(--transition);
+    }
+
+    [data-theme="glass"] .panel {
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+    }
+
+    [data-theme="neumorphic"] .panel {
+      border: none;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-header {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-header::before {
+      content: '';
+      width: 3px;
+      height: 14px;
+      background: var(--gradient);
+      border-radius: 2px;
+    }
+
+    [data-theme="minimal"] .panel-header::before,
+    [data-theme="brutalist"] .panel-header::before,
+    [data-theme="paper"] .panel-header::before {
+      background: var(--accent);
+    }
+
+    /* =============================================
+       LAYOUT
+       ============================================= */
     .editor { display: none; }
     .editor.visible { display: block; }
 
     .editor-layout {
-      display: flex; gap: 32px;
+      display: flex;
+      gap: 40px;
       align-items: flex-start;
     }
 
-    /* Left column: controls - takes left half */
     .left-column {
       flex: 1;
       min-width: 0;
       max-width: 50%;
     }
 
-    /* Right column: device mockup - takes right half, device centered */
     .right-column {
       flex: 1;
       display: flex;
@@ -66,223 +636,332 @@
       top: 20px;
     }
 
-    /* Navigation */
+    /* =============================================
+       NAVIGATION
+       ============================================= */
     .nav-row {
-      display: flex; justify-content: space-between;
-      align-items: center; margin-bottom: 16px;
-      padding: 12px; background: #1a1a1a; border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 16px 20px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
     }
-    .nav-row .counter { font-size: 0.9rem; color: #888; }
-    .nav-row .counter strong { color: #eee; }
-    .nav-buttons { display: flex; gap: 8px; }
 
-    /* Original image */
+    .counter {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
+    .counter strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* =============================================
+       ORIGINAL IMAGE SECTION
+       ============================================= */
     .original-section {
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
-    .original-box {
-      background: #1a1a1a; border-radius: 8px; padding: 12px;
-      border: 1px solid #333;
-    }
-    .section-label {
-      font-size: 0.75rem; color: #666; margin-bottom: 8px;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
+
     .original-img {
-      width: 100%; max-width: 200px; height: auto;
+      width: 100%;
+      max-width: 220px;
+      height: auto;
       aspect-ratio: 480 / 800;
       object-fit: contain;
-      border-radius: 4px; background: #000;
+      border-radius: var(--radius-md);
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
     }
+
     .file-info {
-      font-size: 0.85rem; color: #888; margin-top: 10px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 12px;
+      font-family: var(--font-mono);
     }
-    .file-info strong { color: #ccc; }
 
-    /* Controls */
-    .controls-section {
-      background: #1a1a1a; border-radius: 8px; padding: 16px;
-      border: 1px solid #333; margin-bottom: 16px;
+    .file-info strong {
+      color: var(--text-primary);
+      font-weight: 500;
     }
+
+    /* =============================================
+       CONTROL GROUPS
+       ============================================= */
     .control-group {
-      margin-bottom: 14px;
-    }
-    .control-group:last-child { margin-bottom: 0; }
-    .control-group label {
-      display: block; font-size: 0.8rem; color: #888;
-      margin-bottom: 6px;
-    }
-    .control-group select, .control-group input[type="text"] {
-      width: 100%; padding: 10px 12px;
-      background: #222; border: 1px solid #444;
-      border-radius: 8px; color: #eee; font-size: 0.9rem;
-    }
-    .control-group input[type="text"] { font-family: monospace; font-size: 0.8rem; }
-    .slider-row {
-      display: flex; align-items: center; gap: 12px;
-    }
-    .slider-row input[type="range"] {
-      flex: 1; accent-color: #2a6;
-    }
-    .slider-value {
-      min-width: 40px; text-align: center;
-      font-size: 0.9rem; color: #aaa;
+      margin-bottom: 20px;
     }
 
-    /* Thumbnail strip */
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* =============================================
+       THUMBNAIL STRIP
+       ============================================= */
     .thumb-strip {
-      display: flex; gap: 8px; overflow-x: auto;
-      padding: 12px; background: #1a1a1a; border-radius: 8px;
-      margin-bottom: 16px; border: 1px solid #333;
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 20px;
     }
-    .thumb-strip::-webkit-scrollbar { height: 6px; }
-    .thumb-strip::-webkit-scrollbar-track { background: #222; border-radius: 3px; }
-    .thumb-strip::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+    .thumb-strip::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .thumb-strip::-webkit-scrollbar-track {
+      background: var(--bg-tertiary);
+      border-radius: 3px;
+    }
+
+    .thumb-strip::-webkit-scrollbar-thumb {
+      background: var(--text-muted);
+      border-radius: 3px;
+    }
+
     .thumb-item {
-      flex-shrink: 0; width: 36px; height: 60px;
-      border-radius: 4px; cursor: pointer;
+      flex-shrink: 0;
+      width: 42px;
+      height: 70px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
       border: 2px solid transparent;
-      overflow: hidden; position: relative;
+      overflow: hidden;
+      position: relative;
+      transition: all var(--transition);
     }
-    .thumb-item.active { border-color: #2a6; }
+
+    .thumb-item:hover {
+      transform: scale(1.05);
+    }
+
+    .thumb-item.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
     .thumb-item img {
-      width: 100%; height: 100%; object-fit: cover;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
-    .thumb-item .thumb-remove {
-      position: absolute; top: 2px; right: 2px;
-      width: 14px; height: 14px; border-radius: 50%;
-      background: rgba(0,0,0,0.7); border: none; color: #888;
-      cursor: pointer; font-size: 10px; line-height: 1;
-      display: none;
-    }
-    .thumb-item:hover .thumb-remove { display: block; }
-    .thumb-item .thumb-remove:hover { background: #a33; color: #fff; }
 
-    /* Apply to all */
+    .thumb-remove {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: rgba(220, 38, 38, 0.9);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      font-size: 10px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .thumb-item:hover .thumb-remove {
+      display: flex;
+    }
+
+    /* =============================================
+       APPLY PANEL
+       ============================================= */
     .apply-panel {
-      display: none; background: #1a1a1a; border-radius: 8px;
-      padding: 14px; margin-bottom: 16px; border: 1px solid #333;
-    }
-    .apply-panel.visible { display: block; }
-    .apply-panel h3 {
-      font-size: 0.8rem; margin-bottom: 12px; color: #666;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .apply-row {
-      display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;
-    }
-    .apply-row .control-group { flex: 1; min-width: 100px; margin-bottom: 0; }
-    .apply-row .control-group select { padding: 8px 10px; font-size: 0.8rem; }
-    .apply-row .btn-group { display: flex; gap: 8px; }
-
-    /* Actions */
-    .actions {
-      display: flex; gap: 12px; flex-wrap: wrap;
-    }
-
-    /* Status */
-    .status {
-      text-align: center; padding: 12px;
-      background: #1a2a1a; border-radius: 8px;
-      color: #4d4; margin-bottom: 16px;
       display: none;
     }
-    .status.visible { display: block; }
-    .status.error { background: #2a1a1a; color: #d44; }
 
-    /* ============================================
-       DEVICE MOCKUP - Large right side
-       ============================================ */
+    .apply-panel.visible {
+      display: block;
+    }
+
+    .apply-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .apply-row .control-group {
+      flex: 1;
+      min-width: 100px;
+      margin-bottom: 0;
+    }
+
+    .apply-row .btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* =============================================
+       STATUS
+       ============================================= */
+    .status {
+      text-align: center;
+      padding: 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-md);
+      color: var(--accent);
+      margin-bottom: 20px;
+      display: none;
+      font-weight: 500;
+    }
+
+    .status.visible {
+      display: block;
+    }
+
+    .status.error {
+      border-color: #dc2626;
+      color: #dc2626;
+    }
+
+    /* =============================================
+       ACTIONS
+       ============================================= */
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* =============================================
+       DEVICE MOCKUP
+       ============================================= */
     .device-wrapper {
-      display: flex; flex-direction: column; align-items: center; gap: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
     }
-    .device-color-toggle {
-      display: flex; gap: 10px; align-items: center;
-    }
-    .device-color-toggle span {
-      font-size: 0.8rem; color: #888;
-    }
-    .color-btn {
-      width: 32px; height: 32px; border-radius: 50%;
-      border: 2px solid #444; cursor: pointer;
-      transition: border-color 0.2s, transform 0.1s;
-    }
-    .color-btn:hover { transform: scale(1.1); }
-    .color-btn.active { border-color: #2a6; border-width: 3px; }
-    .color-btn.black { background: linear-gradient(145deg, #2a2a2a, #1a1a1a); }
-    .color-btn.white { background: linear-gradient(145deg, #f5f5f0, #e8e8e3); }
 
-    /* Device frame - scaled to show 480x800 at good size */
+    .device-color-toggle {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .device-color-toggle span {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .color-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 3px solid var(--border);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .color-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .color-btn.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .color-btn.black {
+      background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+    }
+
+    .color-btn.white {
+      background: linear-gradient(145deg, #f5f5f0, #e8e8e3);
+    }
+
     .device-frame {
       position: relative;
-      /* Bezels: top 28px, sides 18px, bottom 40px */
-      padding: 28px 18px 40px 18px;
+      padding: 28px 18px 44px 18px;
       border-radius: 24px;
-      box-shadow:
-        0 25px 80px rgba(0,0,0,0.6),
-        0 0 0 1px rgba(255,255,255,0.05) inset;
-      transition: background 0.3s, box-shadow 0.3s;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+      transition: all var(--transition);
     }
+
     .device-frame.black {
       background: linear-gradient(165deg, #2d2d2d 0%, #1a1a1a 50%, #0d0d0d 100%);
     }
+
     .device-frame.white {
       background: linear-gradient(165deg, #f0f0eb 0%, #e5e5e0 50%, #d8d8d3 100%);
-      box-shadow:
-        0 25px 80px rgba(0,0,0,0.35),
-        0 0 0 1px rgba(255,255,255,0.4) inset;
     }
 
-    /* Device branding */
     .device-frame::before {
       content: 'XTEINK';
       position: absolute;
-      bottom: 14px;
+      bottom: 16px;
       left: 50%;
       transform: translateX(-50%);
       font-size: 9px;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 3px;
-      opacity: 0.5;
+      opacity: 0.4;
     }
+
     .device-frame.black::before { color: #555; }
     .device-frame.white::before { color: #aaa; }
 
-    /* Power button on right side */
     .device-frame::after {
       content: '';
       position: absolute;
       top: 80px;
       right: -4px;
       width: 4px;
-      height: 40px;
+      height: 44px;
       border-radius: 0 3px 3px 0;
-      transition: background 0.3s;
     }
+
     .device-frame.black::after { background: linear-gradient(180deg, #3a3a3a, #2a2a2a); }
     .device-frame.white::after { background: linear-gradient(180deg, #d0d0d0, #bbb); }
 
-    /* E-ink screen - LARGE */
     .eink-screen {
       position: relative;
-      width: 288px;  /* Display size */
+      width: 288px;
       height: 480px;
-      border-radius: 3px;
+      border-radius: 4px;
       overflow: hidden;
-      /* E-ink paper color - slightly warm/gray off-white */
       background: #d8d6d0;
-      /* Recessed screen effect */
-      box-shadow:
-        inset 0 2px 4px rgba(0,0,0,0.12),
-        inset 0 0 0 1px rgba(0,0,0,0.1);
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.12);
     }
 
-    /* Paper texture overlay */
     .eink-screen::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       opacity: 0.04;
       pointer-events: none;
       z-index: 2;
@@ -290,145 +969,182 @@
 
     .preview-canvas {
       display: block;
-      /* Canvas is full 480x800 resolution, CSS scales display size */
       width: 288px;
       height: 480px;
-      /* GRAYSCALE - e-ink has no color! Plus slight contrast reduction for realism */
       filter: grayscale(100%) contrast(0.9);
     }
 
     .device-specs {
-      font-size: 0.7rem;
-      color: #555;
+      font-size: 0.75rem;
+      color: var(--text-muted);
       text-align: center;
-      margin-top: 8px;
+      font-family: var(--font-mono);
     }
 
-    /* Responsive: stack on smaller screens */
+    /* =============================================
+       RESPONSIVE
+       ============================================= */
     @media (max-width: 900px) {
       .editor-layout {
         flex-direction: column-reverse;
       }
+
       .right-column {
         position: static;
         width: 100%;
         margin-bottom: 24px;
       }
+
       .left-column {
         max-width: 100%;
         width: 100%;
+      }
+
+      .theme-switcher {
+        padding: 12px;
+      }
+
+      .theme-btn {
+        width: 30px;
+        height: 30px;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>E-Reader Converter</h1>
-    <p class="info">Converts to 480x800 BMP for Xteink X4</p>
+    <header class="header">
+      <h1>E-Reader Converter</h1>
+      <p class="info">Converts to 480x800 BMP for Xteink X4</p>
+    </header>
+
+    <div class="theme-switcher">
+      <div style="width: 100%; text-align: center;">
+        <div class="theme-label">Choose Style</div>
+      </div>
+      <button class="theme-btn active" data-theme="cyber" title="Cyber"></button>
+      <button class="theme-btn" data-theme="minimal" title="Minimal"></button>
+      <button class="theme-btn" data-theme="synthwave" title="Synthwave"></button>
+      <button class="theme-btn" data-theme="neumorphic" title="Neumorphic"></button>
+      <button class="theme-btn" data-theme="glass" title="Glass"></button>
+      <button class="theme-btn" data-theme="terminal" title="Terminal"></button>
+      <button class="theme-btn" data-theme="brutalist" title="Brutalist"></button>
+      <button class="theme-btn" data-theme="vapor" title="Vapor"></button>
+      <button class="theme-btn" data-theme="luxury" title="Luxury"></button>
+      <button class="theme-btn" data-theme="paper" title="Paper"></button>
+    </div>
 
     <div class="dropzone" id="dropzone">
+      <div class="dropzone-icon">+</div>
       <p>Drop images here or tap to select</p>
     </div>
     <input type="file" id="fileInput" accept="image/*" multiple>
 
     <div class="editor" id="editor">
       <div class="editor-layout">
-        <!-- Left column: controls -->
         <div class="left-column">
           <div class="nav-row">
             <div class="counter">
               Image <strong><span id="currentIndex">1</span></strong> of <strong><span id="totalCount">1</span></strong>
             </div>
             <div class="nav-buttons">
-              <button class="btn btn-sm" id="prevBtn">&larr; Prev</button>
-              <button class="btn btn-sm" id="nextBtn">Next &rarr;</button>
+              <button class="btn btn-sm" id="prevBtn">← Prev</button>
+              <button class="btn btn-sm" id="nextBtn">Next →</button>
             </div>
           </div>
 
-          <div class="original-section">
-            <div class="original-box">
-              <div class="section-label">Original</div>
-              <img class="original-img" id="originalImg">
-              <div class="file-info" id="fileInfo"></div>
-            </div>
+          <div class="panel original-section">
+            <div class="panel-header">Original</div>
+            <img class="original-img" id="originalImg">
+            <div class="file-info" id="fileInfo"></div>
           </div>
 
-          <div class="controls-section">
+          <div class="panel">
+            <div class="panel-header">Settings</div>
+
             <div class="control-group">
-              <label>Fit Mode</label>
-              <select id="fitSelect">
-                <option value="crop">Center crop (fill)</option>
-                <option value="letterbox-white">Letterbox (white)</option>
-                <option value="letterbox-black">Letterbox (black)</option>
-                <option value="stretch">Stretch (smush)</option>
-              </select>
+              <label class="control-label">Fit Mode</label>
+              <div class="select-wrapper">
+                <select class="custom-select" id="fitSelect">
+                  <option value="crop">Center crop (fill)</option>
+                  <option value="letterbox-white">Letterbox (white)</option>
+                  <option value="letterbox-black">Letterbox (black)</option>
+                  <option value="stretch">Stretch (smush)</option>
+                </select>
+              </div>
             </div>
 
             <div class="control-group">
-              <label>Contrast</label>
-              <div class="slider-row">
-                <input type="range" id="contrastSlider" min="-100" max="100" value="0">
+              <label class="control-label">Contrast</label>
+              <div class="slider-container">
+                <input type="range" class="custom-slider" id="contrastSlider" min="-100" max="100" value="0">
                 <span class="slider-value" id="contrastValue">0</span>
               </div>
             </div>
 
             <div class="control-group">
-              <label>Posterize / Dither</label>
-              <select id="posterizeSelect">
-                <option value="off">Off (full grayscale)</option>
-                <option value="16">16 shades</option>
-                <option value="8">8 shades</option>
-                <option value="4">4 shades</option>
-                <option value="2">2 shades (B&W)</option>
-                <option value="16d">16 shades + dither</option>
-                <option value="8d">8 shades + dither</option>
-                <option value="4d">4 shades + dither</option>
-                <option value="2d">2 shades + dither</option>
-              </select>
+              <label class="control-label">Posterize / Dither</label>
+              <div class="select-wrapper">
+                <select class="custom-select" id="posterizeSelect">
+                  <option value="off">Off (full grayscale)</option>
+                  <option value="16">16 shades</option>
+                  <option value="8">8 shades</option>
+                  <option value="4">4 shades</option>
+                  <option value="2">2 shades (B&W)</option>
+                  <option value="16d">16 shades + dither</option>
+                  <option value="8d">8 shades + dither</option>
+                  <option value="4d">4 shades + dither</option>
+                  <option value="2d">2 shades + dither</option>
+                </select>
+              </div>
             </div>
 
             <div class="control-group">
-              <label>Output Filename</label>
-              <input type="text" id="filenameInput">
+              <label class="control-label">Output Filename</label>
+              <input type="text" class="custom-input" id="filenameInput">
             </div>
           </div>
 
           <div class="thumb-strip" id="thumbStrip"></div>
 
-          <div class="apply-panel" id="applyPanel">
-            <h3>Apply to All</h3>
+          <div class="panel apply-panel" id="applyPanel">
+            <div class="panel-header">Apply to All</div>
             <div class="apply-row">
               <div class="control-group">
-                <label>Fit</label>
-                <select id="applyFit">
-                  <option value="">--</option>
-                  <option value="crop">Crop</option>
-                  <option value="letterbox-white">Letterbox W</option>
-                  <option value="letterbox-black">Letterbox B</option>
-                  <option value="stretch">Stretch</option>
-                </select>
+                <label class="control-label">Fit</label>
+                <div class="select-wrapper">
+                  <select class="custom-select" id="applyFit">
+                    <option value="">--</option>
+                    <option value="crop">Crop</option>
+                    <option value="letterbox-white">LB White</option>
+                    <option value="letterbox-black">LB Black</option>
+                    <option value="stretch">Stretch</option>
+                  </select>
+                </div>
               </div>
               <div class="control-group">
-                <label>Contrast</label>
-                <div class="slider-row">
-                  <input type="range" id="applyContrast" min="-100" max="100" value="0" style="width:80px">
+                <label class="control-label">Contrast</label>
+                <div class="slider-container">
+                  <input type="range" class="custom-slider" id="applyContrast" min="-100" max="100" value="0" style="width: 80px;">
                   <span class="slider-value" id="applyContrastValue">0</span>
                 </div>
               </div>
               <div class="control-group">
-                <label>Posterize</label>
-                <select id="applyPosterize">
-                  <option value="">--</option>
-                  <option value="off">Off</option>
-                  <option value="16">16</option>
-                  <option value="8">8</option>
-                  <option value="4">4</option>
-                  <option value="2">2</option>
-                  <option value="16d">16+D</option>
-                  <option value="8d">8+D</option>
-                  <option value="4d">4+D</option>
-                  <option value="2d">2+D</option>
-                </select>
+                <label class="control-label">Posterize</label>
+                <div class="select-wrapper">
+                  <select class="custom-select" id="applyPosterize">
+                    <option value="">--</option>
+                    <option value="off">Off</option>
+                    <option value="16">16</option>
+                    <option value="8">8</option>
+                    <option value="4">4</option>
+                    <option value="2">2</option>
+                    <option value="16d">16+D</option>
+                    <option value="8d">8+D</option>
+                    <option value="4d">4+D</option>
+                    <option value="2d">2+D</option>
+                  </select>
+                </div>
               </div>
               <div class="btn-group">
                 <button class="btn btn-sm" id="applyBtn">Apply</button>
@@ -444,11 +1160,10 @@
           </div>
         </div>
 
-        <!-- Right column: device mockup -->
         <div class="right-column">
           <div class="device-wrapper">
             <div class="device-color-toggle">
-              <span>Device color:</span>
+              <span>Device</span>
               <button class="color-btn black active" id="colorBlack" title="Space Black"></button>
               <button class="color-btn white" id="colorWhite" title="Pearl White"></button>
             </div>
@@ -457,9 +1172,7 @@
                 <canvas class="preview-canvas" id="previewCanvas" width="480" height="800"></canvas>
               </div>
             </div>
-            <div class="device-specs">
-              4.3" E Ink &bull; 480x800 &bull; 220 PPI &bull; Grayscale
-            </div>
+            <div class="device-specs">4.3" E Ink • 480×800 • 220 PPI • Grayscale</div>
           </div>
         </div>
       </div>
@@ -468,6 +1181,26 @@
 
   <script>
     const WIDTH = 480, HEIGHT = 800;
+
+    // Theme Switcher
+    const themeBtns = document.querySelectorAll('.theme-btn');
+    themeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        themeBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.documentElement.setAttribute('data-theme', btn.dataset.theme);
+        localStorage.setItem('theme', btn.dataset.theme);
+      });
+    });
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      themeBtns.forEach(b => {
+        b.classList.toggle('active', b.dataset.theme === savedTheme);
+      });
+    }
 
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileInput');
@@ -538,12 +1271,7 @@
       const baseName = file.name.replace(/\.[^.]+$/, '');
       const timestamp = formatTimestamp(new Date());
       const item = {
-        id,
-        file,
-        img: null,
-        fit: 'crop',
-        contrast: 0,
-        posterize: 'off',
+        id, file, img: null, fit: 'crop', contrast: 0, posterize: 'off',
         filename: `${baseName}_480x800_${timestamp}.bmp`
       };
       queue.push(item);
@@ -562,7 +1290,6 @@
         img.src = e.target.result;
       };
       reader.readAsDataURL(file);
-
       updateUI();
     }
 
@@ -575,27 +1302,20 @@
       const idx = queue.findIndex(item => item.id === id);
       if (idx === -1) return;
       queue.splice(idx, 1);
-      if (queue.length === 0) {
-        currentIdx = 0;
-      } else if (currentIdx >= queue.length) {
-        currentIdx = queue.length - 1;
-      }
+      if (queue.length === 0) currentIdx = 0;
+      else if (currentIdx >= queue.length) currentIdx = queue.length - 1;
       renderThumbnails();
-      if (queue.length > 0) {
-        showImage(currentIdx);
-      }
+      if (queue.length > 0) showImage(currentIdx);
       updateUI();
     }
 
     function updateUI() {
       const hasImages = queue.length > 0;
       const allLoaded = queue.every(item => item.img);
-
       editor.classList.toggle('visible', hasImages);
       dropzone.classList.toggle('minimized', hasImages);
       applyPanel.classList.toggle('visible', queue.length >= 2);
       convertAllBtn.disabled = !hasImages || !allLoaded;
-
       totalCountEl.textContent = queue.length;
       currentIndexEl.textContent = queue.length > 0 ? currentIdx + 1 : 0;
       prevBtn.disabled = currentIdx === 0;
@@ -607,16 +1327,10 @@
       queue.forEach((item, idx) => {
         const div = document.createElement('div');
         div.className = 'thumb-item' + (idx === currentIdx ? ' active' : '');
-        div.innerHTML = `
-          <img src="${item.img ? item.img.src : ''}">
-          <button class="thumb-remove">&times;</button>
-        `;
+        div.innerHTML = `<img src="${item.img ? item.img.src : ''}"><button class="thumb-remove">×</button>`;
         div.onclick = (e) => {
-          if (e.target.classList.contains('thumb-remove')) {
-            removeFromQueue(item.id);
-          } else {
-            showImage(idx);
-          }
+          if (e.target.classList.contains('thumb-remove')) removeFromQueue(item.id);
+          else showImage(idx);
         };
         thumbStrip.appendChild(div);
       });
@@ -624,25 +1338,17 @@
 
     function showImage(idx) {
       if (idx < 0 || idx >= queue.length) return;
-
-      if (queue[currentIdx]) {
-        saveCurrentSettings();
-      }
-
+      if (queue[currentIdx]) saveCurrentSettings();
       currentIdx = idx;
       const item = queue[idx];
-
       if (!item.img) return;
-
       originalImg.src = item.img.src;
-      fileInfoEl.innerHTML = `<strong>${item.file.name}</strong><br>${item.img.width} x ${item.img.height}`;
-
+      fileInfoEl.innerHTML = `<strong>${item.file.name}</strong><br>${item.img.width} × ${item.img.height}`;
       fitSelect.value = item.fit;
       contrastSlider.value = item.contrast;
       contrastValue.textContent = item.contrast;
       posterizeSelect.value = item.posterize;
       filenameInput.value = item.filename;
-
       updatePreview();
       renderThumbnails();
       updateUI();
@@ -660,19 +1366,15 @@
     function updatePreview() {
       const item = queue[currentIdx];
       if (!item || !item.img) return;
-
       const fullCanvas = document.createElement('canvas');
       fullCanvas.width = WIDTH;
       fullCanvas.height = HEIGHT;
       const fullCtx = fullCanvas.getContext('2d');
-
       drawFitted(fullCtx, item.img, fitSelect.value);
       const imageData = fullCtx.getImageData(0, 0, WIDTH, HEIGHT);
       applyContrast(imageData, parseInt(contrastSlider.value));
       applyPosterize(imageData, posterizeSelect.value);
       fullCtx.putImageData(imageData, 0, 0);
-
-      // Draw at full resolution - CSS handles display scaling
       previewCtx.drawImage(fullCanvas, 0, 0);
     }
 
@@ -696,13 +1398,11 @@
       const fit = document.getElementById('applyFit').value;
       const contrast = parseInt(document.getElementById('applyContrast').value);
       const posterize = document.getElementById('applyPosterize').value;
-
       for (const item of queue) {
         if (fit) item.fit = fit;
         item.contrast = contrast;
         if (posterize) item.posterize = posterize;
       }
-
       showImage(currentIdx);
     };
 
@@ -715,7 +1415,6 @@
 
     convertAllBtn.onclick = async () => {
       if (queue.length === 0) return;
-
       saveCurrentSettings();
       convertAllBtn.disabled = true;
       statusEl.className = 'status visible';
@@ -724,7 +1423,6 @@
       for (const item of queue) {
         let name = item.filename.trim();
         if (!name.toLowerCase().endsWith('.bmp')) name += '.bmp';
-
         const baseName = name.slice(0, -4);
         let finalName = name;
         let counter = 2;
@@ -739,14 +1437,10 @@
       for (let i = 0; i < queue.length; i++) {
         const item = queue[i];
         statusEl.textContent = `Converting ${i + 1}/${queue.length}...`;
-
         try {
           const blob = await processImage(item);
           downloadBlob(blob, item._finalFilename);
-
-          if (i < queue.length - 1) {
-            await sleep(120);
-          }
+          if (i < queue.length - 1) await sleep(120);
         } catch (err) {
           statusEl.className = 'status visible error';
           statusEl.textContent = `Error: ${err.message}`;
@@ -754,7 +1448,6 @@
           return;
         }
       }
-
       statusEl.textContent = `Done! Downloaded ${queue.length} file(s).`;
       convertAllBtn.disabled = false;
     };
@@ -762,32 +1455,17 @@
     function drawFitted(ctx, img, fit) {
       const srcRatio = img.width / img.height;
       const dstRatio = WIDTH / HEIGHT;
-
       if (fit === 'crop') {
         let sx = 0, sy = 0, sw = img.width, sh = img.height;
-        if (srcRatio > dstRatio) {
-          sw = img.height * dstRatio;
-          sx = (img.width - sw) / 2;
-        } else {
-          sh = img.width / dstRatio;
-          sy = (img.height - sh) / 2;
-        }
+        if (srcRatio > dstRatio) { sw = img.height * dstRatio; sx = (img.width - sw) / 2; }
+        else { sh = img.width / dstRatio; sy = (img.height - sh) / 2; }
         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, WIDTH, HEIGHT);
       } else if (fit === 'letterbox-white' || fit === 'letterbox-black') {
         ctx.fillStyle = fit === 'letterbox-white' ? '#fff' : '#000';
         ctx.fillRect(0, 0, WIDTH, HEIGHT);
         let dw, dh, dx, dy;
-        if (srcRatio > dstRatio) {
-          dw = WIDTH;
-          dh = WIDTH / srcRatio;
-          dx = 0;
-          dy = (HEIGHT - dh) / 2;
-        } else {
-          dh = HEIGHT;
-          dw = HEIGHT * srcRatio;
-          dx = (WIDTH - dw) / 2;
-          dy = 0;
-        }
+        if (srcRatio > dstRatio) { dw = WIDTH; dh = WIDTH / srcRatio; dx = 0; dy = (HEIGHT - dh) / 2; }
+        else { dh = HEIGHT; dw = HEIGHT * srcRatio; dx = (WIDTH - dw) / 2; dy = 0; }
         ctx.drawImage(img, dx, dy, dw, dh);
       } else if (fit === 'stretch') {
         ctx.drawImage(img, 0, 0, WIDTH, HEIGHT);
@@ -807,18 +1485,15 @@
 
     function applyPosterize(imageData, mode) {
       if (mode === 'off') return;
-
       const data = imageData.data;
       const dither = mode.endsWith('d');
       const shades = parseInt(mode);
       const step = 255 / (shades - 1);
-
       const gray = new Float32Array(WIDTH * HEIGHT);
       for (let i = 0; i < gray.length; i++) {
         const idx = i * 4;
         gray[i] = 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
       }
-
       if (dither) {
         for (let y = 0; y < HEIGHT; y++) {
           for (let x = 0; x < WIDTH; x++) {
@@ -827,7 +1502,6 @@
             const newVal = Math.round(oldVal / step) * step;
             gray[i] = newVal;
             const error = oldVal - newVal;
-
             if (x + 1 < WIDTH) gray[i + 1] += error * 7 / 16;
             if (y + 1 < HEIGHT) {
               if (x > 0) gray[i + WIDTH - 1] += error * 3 / 16;
@@ -837,11 +1511,8 @@
           }
         }
       } else {
-        for (let i = 0; i < gray.length; i++) {
-          gray[i] = Math.round(gray[i] / step) * step;
-        }
+        for (let i = 0; i < gray.length; i++) gray[i] = Math.round(gray[i] / step) * step;
       }
-
       for (let i = 0; i < gray.length; i++) {
         const v = clamp(gray[i]);
         const idx = i * 4;
@@ -849,9 +1520,7 @@
       }
     }
 
-    function clamp(v) {
-      return Math.max(0, Math.min(255, Math.round(v)));
-    }
+    function clamp(v) { return Math.max(0, Math.min(255, Math.round(v))); }
 
     function processImage(item) {
       return new Promise((resolve) => {
@@ -859,12 +1528,10 @@
         canvas.width = WIDTH;
         canvas.height = HEIGHT;
         const ctx = canvas.getContext('2d');
-
         drawFitted(ctx, item.img, item.fit);
         const imageData = ctx.getImageData(0, 0, WIDTH, HEIGHT);
         applyContrast(imageData, item.contrast);
         applyPosterize(imageData, item.posterize);
-
         resolve(createBMP(imageData));
       });
     }
@@ -878,9 +1545,7 @@
       URL.revokeObjectURL(url);
     }
 
-    function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
+    function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
     function createBMP(imageData) {
       const w = WIDTH, h = HEIGHT;
@@ -888,16 +1553,12 @@
       const pixelDataSize = rowSize * h;
       const headerSize = 54;
       const fileSize = headerSize + pixelDataSize;
-
       const buffer = new ArrayBuffer(fileSize);
       const view = new DataView(buffer);
-
-      view.setUint8(0, 0x42);
-      view.setUint8(1, 0x4D);
+      view.setUint8(0, 0x42); view.setUint8(1, 0x4D);
       view.setUint32(2, fileSize, true);
       view.setUint32(6, 0, true);
       view.setUint32(10, headerSize, true);
-
       view.setUint32(14, 40, true);
       view.setInt32(18, w, true);
       view.setInt32(22, -h, true);
@@ -909,7 +1570,6 @@
       view.setUint32(42, 2835, true);
       view.setUint32(46, 0, true);
       view.setUint32(50, 0, true);
-
       const data = imageData.data;
       let offset = headerSize;
       for (let y = 0; y < h; y++) {
@@ -921,11 +1581,8 @@
           view.setUint8(offset++, data[i]);
         }
         const padding = rowSize - (offset - rowStart);
-        for (let p = 0; p < padding; p++) {
-          view.setUint8(offset++, 0);
-        }
+        for (let p = 0; p < padding; p++) view.setUint8(offset++, 0);
       }
-
       return new Blob([buffer], { type: 'image/bmp' });
     }
   </script>
