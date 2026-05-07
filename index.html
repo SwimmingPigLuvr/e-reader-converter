@@ -11,7 +11,7 @@
       background: #111; color: #eee;
       min-height: 100vh; padding: 20px;
     }
-    .container { max-width: 900px; margin: 0 auto; }
+    .container { max-width: 1000px; margin: 0 auto; }
     h1 { font-size: 1.5rem; margin-bottom: 10px; text-align: center; }
     .info { font-size: 0.85rem; color: #888; margin-bottom: 20px; text-align: center; }
 
@@ -50,27 +50,144 @@
     }
 
     .preview-section { text-align: center; }
+
+    /* Device Mockup */
+    .device-wrapper {
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .device-color-toggle {
+      display: flex; gap: 8px; align-items: center;
+    }
+    .device-color-toggle span {
+      font-size: 0.75rem; color: #888; text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .color-btn {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 2px solid #444; cursor: pointer;
+      transition: border-color 0.2s, transform 0.1s;
+    }
+    .color-btn:hover { transform: scale(1.1); }
+    .color-btn.active { border-color: #2a6; border-width: 3px; }
+    .color-btn.black { background: linear-gradient(145deg, #2a2a2a, #1a1a1a); }
+    .color-btn.white { background: linear-gradient(145deg, #f5f5f0, #e8e8e3); }
+
+    .device-frame {
+      position: relative;
+      padding: 24px 16px 32px 16px;
+      border-radius: 20px;
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(255,255,255,0.05) inset;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .device-frame.black {
+      background: linear-gradient(165deg, #2d2d2d 0%, #1a1a1a 50%, #0d0d0d 100%);
+    }
+    .device-frame.white {
+      background: linear-gradient(165deg, #f0f0eb 0%, #e5e5e0 50%, #d8d8d3 100%);
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.3),
+        0 0 0 1px rgba(255,255,255,0.3) inset;
+    }
+
+    /* Device details */
+    .device-frame::before {
+      content: 'XTEINK';
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      opacity: 0.4;
+    }
+    .device-frame.black::before { color: #666; }
+    .device-frame.white::before { color: #999; }
+
+    /* Power button */
+    .device-frame::after {
+      content: '';
+      position: absolute;
+      top: 50px;
+      right: -3px;
+      width: 3px;
+      height: 30px;
+      border-radius: 0 2px 2px 0;
+      transition: background 0.3s;
+    }
+    .device-frame.black::after { background: #444; }
+    .device-frame.white::after { background: #ccc; }
+
+    /* E-ink screen container */
+    .eink-screen {
+      position: relative;
+      width: 180px;
+      height: 300px;
+      border-radius: 4px;
+      overflow: hidden;
+      /* E-ink paper color - slightly warm off-white */
+      background: #e8e6e0;
+      /* Subtle inner shadow for recessed look */
+      box-shadow:
+        inset 0 1px 3px rgba(0,0,0,0.15),
+        inset 0 0 0 1px rgba(0,0,0,0.08);
+    }
+
+    /* E-ink texture overlay */
+    .eink-screen::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      /* Paper grain texture */
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Slight screen refresh artifact simulation */
+    .eink-screen::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(0,0,0,0.01) 50%,
+        transparent 100%
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .preview-canvas {
+      display: block;
+      width: 180px;
+      height: 300px;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      /* E-ink look: reduce contrast slightly, warm tint */
+      filter: contrast(0.92) sepia(0.08);
+    }
+
+    .original-box {
+      background: #1a1a1a; border-radius: 8px; padding: 8px;
+      border: 1px solid #333;
+    }
     .preview-label {
       font-size: 0.75rem; color: #666; margin-bottom: 6px;
       text-transform: uppercase; letter-spacing: 0.5px;
     }
-    .preview-container {
-      display: flex; gap: 16px; justify-content: center;
-      align-items: flex-start;
-    }
-    .preview-box {
-      background: #1a1a1a; border-radius: 8px; padding: 8px;
-      border: 1px solid #333;
-    }
-    .preview-canvas {
-      display: block; border-radius: 4px;
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
-    }
-    .preview-canvas.large { width: 192px; height: 320px; }
     .original-img {
-      width: 192px; height: 320px; object-fit: contain;
+      width: 180px; height: 300px; object-fit: contain;
       border-radius: 4px; background: #000;
+    }
+
+    .preview-container {
+      display: flex; gap: 20px; justify-content: center;
+      align-items: flex-start;
     }
 
     .controls-section {
@@ -203,13 +320,22 @@
       <div class="editor-main">
         <div class="preview-section">
           <div class="preview-container">
-            <div class="preview-box">
+            <div class="original-box">
               <div class="preview-label">Original</div>
               <img class="original-img" id="originalImg">
             </div>
-            <div class="preview-box">
-              <div class="preview-label">Output Preview</div>
-              <canvas class="preview-canvas large" id="previewCanvas" width="192" height="320"></canvas>
+
+            <div class="device-wrapper">
+              <div class="device-color-toggle">
+                <span>Device</span>
+                <button class="color-btn black active" id="colorBlack" title="Black"></button>
+                <button class="color-btn white" id="colorWhite" title="White"></button>
+              </div>
+              <div class="device-frame black" id="deviceFrame">
+                <div class="eink-screen">
+                  <canvas class="preview-canvas" id="previewCanvas" width="180" height="300"></canvas>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -311,7 +437,7 @@
 
   <script>
     const WIDTH = 480, HEIGHT = 800;
-    const PREVIEW_W = 192, PREVIEW_H = 320;
+    const PREVIEW_W = 180, PREVIEW_H = 300;
 
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileInput');
@@ -325,6 +451,7 @@
     const previewCanvas = document.getElementById('previewCanvas');
     const previewCtx = previewCanvas.getContext('2d');
     const fileInfoEl = document.getElementById('fileInfo');
+    const deviceFrame = document.getElementById('deviceFrame');
 
     const fitSelect = document.getElementById('fitSelect');
     const contrastSlider = document.getElementById('contrastSlider');
@@ -337,9 +464,26 @@
     const currentIndexEl = document.getElementById('currentIndex');
     const totalCountEl = document.getElementById('totalCount');
 
+    const colorBlack = document.getElementById('colorBlack');
+    const colorWhite = document.getElementById('colorWhite');
+
     let queue = [];
     let currentIdx = 0;
     let idCounter = 0;
+
+    // Device color toggle
+    colorBlack.onclick = () => {
+      colorBlack.classList.add('active');
+      colorWhite.classList.remove('active');
+      deviceFrame.classList.remove('white');
+      deviceFrame.classList.add('black');
+    };
+    colorWhite.onclick = () => {
+      colorWhite.classList.add('active');
+      colorBlack.classList.remove('active');
+      deviceFrame.classList.remove('black');
+      deviceFrame.classList.add('white');
+    };
 
     // Dropzone events
     dropzone.onclick = () => fileInput.click();
@@ -380,7 +524,6 @@
         img.onload = () => {
           item.img = img;
           renderThumbnails();
-          // If this is the only/first image, or currently selected, update preview
           if (queue.length === 1 || queue[currentIdx]?.id === item.id) {
             showImage(queue.length - 1);
           }
@@ -452,7 +595,6 @@
     function showImage(idx) {
       if (idx < 0 || idx >= queue.length) return;
 
-      // Save current settings before switching
       if (queue[currentIdx]) {
         saveCurrentSettings();
       }
@@ -462,7 +604,6 @@
 
       if (!item.img) return;
 
-      // Update UI
       originalImg.src = item.img.src;
       fileInfoEl.innerHTML = `<strong>${item.file.name}</strong><br>${item.img.width} x ${item.img.height}`;
 
@@ -490,7 +631,6 @@
       const item = queue[currentIdx];
       if (!item || !item.img) return;
 
-      // Create full-size processed image
       const fullCanvas = document.createElement('canvas');
       fullCanvas.width = WIDTH;
       fullCanvas.height = HEIGHT;
@@ -502,12 +642,10 @@
       applyPosterize(imageData, posterizeSelect.value);
       fullCtx.putImageData(imageData, 0, 0);
 
-      // Scale down to preview
       previewCtx.imageSmoothingEnabled = false;
       previewCtx.drawImage(fullCanvas, 0, 0, PREVIEW_W, PREVIEW_H);
     }
 
-    // Control event listeners
     fitSelect.onchange = () => { saveCurrentSettings(); updatePreview(); };
     contrastSlider.oninput = () => {
       contrastValue.textContent = contrastSlider.value;
@@ -520,7 +658,6 @@
     prevBtn.onclick = () => { if (currentIdx > 0) showImage(currentIdx - 1); };
     nextBtn.onclick = () => { if (currentIdx < queue.length - 1) showImage(currentIdx + 1); };
 
-    // Apply to all
     document.getElementById('applyContrast').oninput = (e) => {
       document.getElementById('applyContrastValue').textContent = e.target.value;
     };
@@ -536,7 +673,6 @@
         if (posterize) item.posterize = posterize;
       }
 
-      // Refresh current view
       showImage(currentIdx);
     };
 
@@ -547,7 +683,6 @@
       updateUI();
     };
 
-    // Convert and download
     convertAllBtn.onclick = async () => {
       if (queue.length === 0) return;
 
@@ -555,7 +690,6 @@
       convertAllBtn.disabled = true;
       statusEl.className = 'status visible';
 
-      // Dedupe filenames
       const filenames = new Map();
       for (const item of queue) {
         let name = item.filename.trim();
