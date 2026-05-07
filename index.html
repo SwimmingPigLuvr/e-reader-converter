@@ -6,220 +6,726 @@
   <title>E-Reader Image Converter</title>
   <style>
     /* =============================================
-       THEME SYSTEM - CSS Custom Properties
+       THEME SYSTEM - Unique Visual Identities
        ============================================= */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:wght@400;600&display=swap');
+
     :root {
-      /* Base structure */
-      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-      --radius-sm: 6px;
-      --radius-md: 12px;
-      --radius-lg: 20px;
-      --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* THEME 1: CYBER - Neon on dark */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* =============================================
+       THEME 1: CYBER - Neon tech with scanlines
+       ============================================= */
     [data-theme="cyber"] {
-      --bg-primary: #0a0a0f;
-      --bg-secondary: #12121a;
-      --bg-tertiary: #1a1a25;
-      --bg-hover: #22222f;
-      --text-primary: #e0e0e8;
-      --text-secondary: #8888a0;
-      --text-muted: #555566;
+      --font-main: 'Space Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --bg-primary: #050508;
+      --bg-secondary: #0a0a12;
+      --bg-tertiary: #0f0f1a;
+      --bg-hover: #141420;
+      --text-primary: #e0e8ff;
+      --text-secondary: #7080a0;
+      --text-muted: #404860;
       --accent: #00f0ff;
       --accent-secondary: #ff00aa;
-      --accent-glow: rgba(0, 240, 255, 0.4);
-      --border: #2a2a3a;
-      --border-focus: var(--accent);
-      --shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-      --shadow-glow: 0 0 30px var(--accent-glow);
-      --gradient: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+      --accent-glow: rgba(0, 240, 255, 0.5);
+      --border: #1a1a2e;
+      --radius: 4px;
+      --shadow: 0 0 40px rgba(0, 240, 255, 0.15);
     }
 
-    /* THEME 2: MINIMAL - Swiss design */
+    [data-theme="cyber"] body {
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 240, 255, 0.03) 2px, rgba(0, 240, 255, 0.03) 4px),
+        linear-gradient(180deg, #050508 0%, #0a0a15 100%);
+    }
+
+    [data-theme="cyber"] .panel {
+      border: 1px solid var(--border);
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.1), inset 0 1px 0 rgba(0, 240, 255, 0.1);
+      position: relative;
+    }
+
+    [data-theme="cyber"] .panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    [data-theme="cyber"] h1 {
+      background: linear-gradient(135deg, #00f0ff, #ff00aa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 60px rgba(0, 240, 255, 0.5);
+    }
+
+    [data-theme="cyber"] .option-btn.selected {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(255, 0, 170, 0.2));
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3), inset 0 0 20px rgba(0, 240, 255, 0.1);
+    }
+
+    [data-theme="cyber"] .btn-primary {
+      background: linear-gradient(135deg, #00f0ff, #ff00aa);
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+    }
+
+    /* =============================================
+       THEME 2: MINIMAL - Swiss precision
+       ============================================= */
     [data-theme="minimal"] {
+      --font-main: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
       --bg-primary: #ffffff;
-      --bg-secondary: #f5f5f5;
-      --bg-tertiary: #ebebeb;
-      --bg-hover: #e0e0e0;
-      --text-primary: #111111;
-      --text-secondary: #555555;
+      --bg-secondary: #fafafa;
+      --bg-tertiary: #f5f5f5;
+      --bg-hover: #eeeeee;
+      --text-primary: #1a1a1a;
+      --text-secondary: #666666;
       --text-muted: #999999;
-      --accent: #000000;
-      --accent-secondary: #333333;
+      --accent: #1a1a1a;
+      --accent-secondary: #666666;
       --accent-glow: rgba(0, 0, 0, 0.1);
-      --border: #dddddd;
-      --border-focus: #000000;
-      --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      --shadow-glow: none;
-      --gradient: linear-gradient(135deg, #333, #000);
+      --border: #e5e5e5;
+      --radius: 0;
+      --shadow: none;
     }
 
-    /* THEME 3: SYNTHWAVE - 80s retro */
+    [data-theme="minimal"] body {
+      background: #ffffff;
+    }
+
+    [data-theme="minimal"] .panel {
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+
+    [data-theme="minimal"] h1 {
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    [data-theme="minimal"] .option-btn {
+      border: 1px solid var(--border);
+    }
+
+    [data-theme="minimal"] .option-btn.selected {
+      background: var(--text-primary);
+      color: #ffffff;
+      border-color: var(--text-primary);
+    }
+
+    [data-theme="minimal"] .option-btn.selected .option-desc {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    [data-theme="minimal"] .btn-primary {
+      background: var(--text-primary);
+      border: none;
+    }
+
+    [data-theme="minimal"] .panel-header::before { display: none; }
+
+    /* =============================================
+       THEME 3: SYNTHWAVE - Retro 80s sunset
+       ============================================= */
     [data-theme="synthwave"] {
-      --bg-primary: #1a1025;
-      --bg-secondary: #241535;
-      --bg-tertiary: #2e1a42;
-      --bg-hover: #3a2255;
-      --text-primary: #f0e0ff;
-      --text-secondary: #b090d0;
-      --text-muted: #705090;
-      --accent: #ff71ce;
-      --accent-secondary: #01cdfe;
-      --accent-glow: rgba(255, 113, 206, 0.4);
-      --border: #4a2a6a;
-      --border-focus: var(--accent);
-      --shadow: 0 4px 30px rgba(255, 113, 206, 0.2);
-      --shadow-glow: 0 0 40px rgba(255, 113, 206, 0.3);
-      --gradient: linear-gradient(135deg, #ff71ce, #01cdfe);
+      --font-main: 'Space Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --bg-primary: #1a0a2e;
+      --bg-secondary: #2d1b4e;
+      --bg-tertiary: #3d2560;
+      --bg-hover: #4a2d70;
+      --text-primary: #f5e6ff;
+      --text-secondary: #c9a0dc;
+      --text-muted: #8a60a0;
+      --accent: #ff2975;
+      --accent-secondary: #f9c80e;
+      --accent-glow: rgba(255, 41, 117, 0.5);
+      --border: #4a2d70;
+      --radius: 0;
+      --shadow: 0 10px 40px rgba(255, 41, 117, 0.2);
     }
 
-    /* THEME 4: NEUMORPHIC - Soft tactile */
+    [data-theme="synthwave"] body {
+      background:
+        linear-gradient(180deg, #1a0a2e 0%, #2d1b4e 40%, #ff2975 100%),
+        linear-gradient(180deg, #1a0a2e 0%, #1a0a2e 100%);
+      background-size: 100% 200%, 100% 100%;
+      background-position: 0 0;
+    }
+
+    [data-theme="synthwave"] body::before {
+      content: '';
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40%;
+      background:
+        repeating-linear-gradient(90deg, rgba(255, 41, 117, 0.1) 0px, rgba(255, 41, 117, 0.1) 1px, transparent 1px, transparent 60px),
+        repeating-linear-gradient(0deg, rgba(255, 41, 117, 0.1) 0px, rgba(255, 41, 117, 0.1) 1px, transparent 1px, transparent 60px);
+      transform: perspective(500px) rotateX(60deg);
+      transform-origin: top;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    [data-theme="synthwave"] .panel {
+      border: 2px solid var(--border);
+      box-shadow: 0 0 30px rgba(255, 41, 117, 0.2);
+    }
+
+    [data-theme="synthwave"] h1 {
+      background: linear-gradient(180deg, #f9c80e, #ff2975);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 80px rgba(255, 41, 117, 0.8);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    [data-theme="synthwave"] .option-btn.selected {
+      background: linear-gradient(180deg, rgba(255, 41, 117, 0.3), rgba(249, 200, 14, 0.1));
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 20px rgba(255, 41, 117, 0.4);
+    }
+
+    [data-theme="synthwave"] .btn-primary {
+      background: linear-gradient(180deg, #f9c80e, #ff2975);
+      box-shadow: 0 0 30px rgba(255, 41, 117, 0.5);
+    }
+
+    /* =============================================
+       THEME 4: NEUMORPHIC - Soft extruded plastic
+       ============================================= */
     [data-theme="neumorphic"] {
+      --font-main: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
       --bg-primary: #e0e5ec;
       --bg-secondary: #e0e5ec;
       --bg-tertiary: #e0e5ec;
-      --bg-hover: #d0d5dc;
-      --text-primary: #2d3748;
-      --text-secondary: #5a6a7a;
-      --text-muted: #8a9aaa;
+      --bg-hover: #d5dae1;
+      --text-primary: #3d4a5c;
+      --text-secondary: #6b7b8f;
+      --text-muted: #9aa5b1;
       --accent: #6366f1;
       --accent-secondary: #8b5cf6;
       --accent-glow: rgba(99, 102, 241, 0.3);
       --border: transparent;
-      --border-focus: var(--accent);
-      --shadow: 8px 8px 16px #b8bcc2, -8px -8px 16px #ffffff;
-      --shadow-glow: inset 4px 4px 8px #b8bcc2, inset -4px -4px 8px #ffffff;
-      --gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+      --radius: 20px;
+      --shadow: 8px 8px 20px #b8bec5, -8px -8px 20px #ffffff;
     }
 
-    /* THEME 5: GLASS - Frosted glass */
+    [data-theme="neumorphic"] body {
+      background: #e0e5ec;
+    }
+
+    [data-theme="neumorphic"] .panel {
+      border: none;
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+    }
+
+    [data-theme="neumorphic"] h1 {
+      color: var(--text-primary);
+      text-shadow: 2px 2px 4px #b8bec5, -2px -2px 4px #ffffff;
+    }
+
+    [data-theme="neumorphic"] .option-btn {
+      border: none;
+      box-shadow: 6px 6px 12px #b8bec5, -6px -6px 12px #ffffff;
+      border-radius: 16px;
+    }
+
+    [data-theme="neumorphic"] .option-btn:hover {
+      box-shadow: 4px 4px 8px #b8bec5, -4px -4px 8px #ffffff;
+    }
+
+    [data-theme="neumorphic"] .option-btn.selected {
+      box-shadow: inset 4px 4px 10px #b8bec5, inset -4px -4px 10px #ffffff;
+      background: #e0e5ec;
+    }
+
+    [data-theme="neumorphic"] .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none;
+      box-shadow: 6px 6px 16px #b8bec5, -6px -6px 16px #ffffff;
+    }
+
+    [data-theme="neumorphic"] .custom-slider {
+      box-shadow: inset 3px 3px 6px #b8bec5, inset -3px -3px 6px #ffffff;
+    }
+
+    /* =============================================
+       THEME 5: GLASS - Frosted transparency
+       ============================================= */
     [data-theme="glass"] {
-      --bg-primary: rgba(15, 15, 25, 0.95);
+      --font-main: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --bg-primary: #0f0f23;
       --bg-secondary: rgba(255, 255, 255, 0.05);
       --bg-tertiary: rgba(255, 255, 255, 0.08);
       --bg-hover: rgba(255, 255, 255, 0.12);
       --text-primary: #ffffff;
       --text-secondary: rgba(255, 255, 255, 0.7);
       --text-muted: rgba(255, 255, 255, 0.4);
-      --accent: #60a5fa;
-      --accent-secondary: #a78bfa;
-      --accent-glow: rgba(96, 165, 250, 0.3);
+      --accent: #818cf8;
+      --accent-secondary: #c084fc;
+      --accent-glow: rgba(129, 140, 248, 0.4);
       --border: rgba(255, 255, 255, 0.1);
-      --border-focus: var(--accent);
-      --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      --shadow-glow: 0 0 30px var(--accent-glow);
-      --gradient: linear-gradient(135deg, #60a5fa, #a78bfa);
-      --glass-blur: blur(20px);
+      --radius: 24px;
+      --shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
     }
 
-    /* THEME 6: TERMINAL - Hacker green */
+    [data-theme="glass"] body {
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(129, 140, 248, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(192, 132, 252, 0.15) 0%, transparent 50%),
+        linear-gradient(180deg, #0f0f23 0%, #1a1a3e 100%);
+    }
+
+    [data-theme="glass"] .panel {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border-radius: var(--radius);
+    }
+
+    [data-theme="glass"] h1 {
+      background: linear-gradient(135deg, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    [data-theme="glass"] .option-btn {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+    }
+
+    [data-theme="glass"] .option-btn.selected {
+      background: rgba(129, 140, 248, 0.2);
+      border-color: rgba(129, 140, 248, 0.5);
+      box-shadow: 0 0 30px rgba(129, 140, 248, 0.3);
+    }
+
+    [data-theme="glass"] .btn-primary {
+      background: linear-gradient(135deg, rgba(129, 140, 248, 0.8), rgba(192, 132, 252, 0.8));
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* =============================================
+       THEME 6: TERMINAL - CRT hacker aesthetic
+       ============================================= */
     [data-theme="terminal"] {
-      --bg-primary: #0d0d0d;
-      --bg-secondary: #141414;
-      --bg-tertiary: #1a1a1a;
-      --bg-hover: #222222;
+      --font-main: 'JetBrains Mono', monospace;
+      --font-mono: 'JetBrains Mono', monospace;
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #0f0f0f;
+      --bg-tertiary: #141414;
+      --bg-hover: #1a1a1a;
       --text-primary: #00ff00;
       --text-secondary: #00cc00;
-      --text-muted: #007700;
+      --text-muted: #008800;
       --accent: #00ff00;
       --accent-secondary: #00ff88;
-      --accent-glow: rgba(0, 255, 0, 0.3);
-      --border: #00ff0033;
-      --border-focus: var(--accent);
-      --shadow: 0 0 20px rgba(0, 255, 0, 0.1);
-      --shadow-glow: 0 0 30px rgba(0, 255, 0, 0.2);
-      --gradient: linear-gradient(135deg, #00ff00, #00ff88);
-      --font-main: 'JetBrains Mono', 'Fira Code', monospace;
+      --accent-glow: rgba(0, 255, 0, 0.4);
+      --border: #00ff0022;
+      --radius: 0;
+      --shadow: 0 0 50px rgba(0, 255, 0, 0.1);
     }
 
-    /* THEME 7: BRUTALIST - Raw and bold */
+    [data-theme="terminal"] body {
+      background: #0a0a0a;
+      position: relative;
+    }
+
+    [data-theme="terminal"] body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15) 0px,
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    [data-theme="terminal"] body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    [data-theme="terminal"] .panel {
+      border: 1px solid var(--accent);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.1), inset 0 0 60px rgba(0, 255, 0, 0.03);
+    }
+
+    [data-theme="terminal"] h1 {
+      color: var(--accent);
+      text-shadow: 0 0 20px var(--accent);
+      font-weight: 400;
+    }
+
+    [data-theme="terminal"] h1::before {
+      content: '> ';
+    }
+
+    [data-theme="terminal"] .panel-header::before {
+      content: '// ';
+      color: var(--text-muted);
+      background: none;
+      width: auto;
+      height: auto;
+      border-radius: 0;
+    }
+
+    [data-theme="terminal"] .option-btn {
+      border: 1px solid var(--border);
+      font-family: var(--font-mono);
+    }
+
+    [data-theme="terminal"] .option-btn.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+      background: rgba(0, 255, 0, 0.1);
+    }
+
+    [data-theme="terminal"] .option-btn.selected::before {
+      content: '█ ';
+      color: var(--accent);
+    }
+
+    [data-theme="terminal"] .btn-primary {
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      text-shadow: 0 0 10px var(--accent);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+    }
+
+    [data-theme="terminal"] .btn-primary:hover {
+      background: rgba(0, 255, 0, 0.1);
+    }
+
+    /* =============================================
+       THEME 7: BRUTALIST - Raw concrete
+       ============================================= */
     [data-theme="brutalist"] {
-      --bg-primary: #f0f0f0;
-      --bg-secondary: #ffffff;
-      --bg-tertiary: #e0e0e0;
-      --bg-hover: #d0d0d0;
+      --font-main: 'Space Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --bg-primary: #d4d4d4;
+      --bg-secondary: #e8e8e8;
+      --bg-tertiary: #f0f0f0;
+      --bg-hover: #c8c8c8;
       --text-primary: #000000;
       --text-secondary: #333333;
       --text-muted: #666666;
       --accent: #ff0000;
-      --accent-secondary: #0000ff;
+      --accent-secondary: #000000;
       --accent-glow: none;
       --border: #000000;
-      --border-focus: #ff0000;
-      --shadow: 4px 4px 0 #000000;
-      --shadow-glow: none;
-      --gradient: none;
-      --radius-sm: 0;
-      --radius-md: 0;
-      --radius-lg: 0;
+      --radius: 0;
+      --shadow: 6px 6px 0 #000000;
     }
 
-    /* THEME 8: VAPOR - Pastel aesthetic */
+    [data-theme="brutalist"] body {
+      background:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.1'/%3E%3C/svg%3E"),
+        #d4d4d4;
+    }
+
+    [data-theme="brutalist"] .panel {
+      border: 3px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    [data-theme="brutalist"] h1 {
+      color: var(--text-primary);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    [data-theme="brutalist"] .panel-header {
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      border-bottom: 3px solid var(--border);
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+    }
+
+    [data-theme="brutalist"] .panel-header::before { display: none; }
+
+    [data-theme="brutalist"] .option-btn {
+      border: 3px solid var(--border);
+      box-shadow: 4px 4px 0 var(--border);
+      font-weight: 600;
+    }
+
+    [data-theme="brutalist"] .option-btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--border);
+    }
+
+    [data-theme="brutalist"] .option-btn.selected {
+      background: var(--accent);
+      color: #ffffff;
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--border);
+    }
+
+    [data-theme="brutalist"] .btn-primary {
+      background: #000000;
+      border: 3px solid #000000;
+      box-shadow: 6px 6px 0 var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+    }
+
+    [data-theme="brutalist"] .btn-primary:hover {
+      box-shadow: 8px 8px 0 var(--accent);
+      transform: translate(-2px, -2px);
+    }
+
+    /* =============================================
+       THEME 8: VAPOR - Dreamy pastel aesthetic
+       ============================================= */
     [data-theme="vapor"] {
-      --bg-primary: #ffe6f0;
-      --bg-secondary: #fff0f5;
-      --bg-tertiary: #ffe0eb;
-      --bg-hover: #ffd6e6;
-      --text-primary: #4a3050;
-      --text-secondary: #7a5080;
-      --text-muted: #aa80b0;
-      --accent: #ff71ce;
+      --font-main: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --bg-primary: #ffeef8;
+      --bg-secondary: #fff5fa;
+      --bg-tertiary: #ffebf5;
+      --bg-hover: #ffe0ef;
+      --text-primary: #4a2040;
+      --text-secondary: #7a4070;
+      --text-muted: #aa70a0;
+      --accent: #ff6ad5;
       --accent-secondary: #7ee8fa;
-      --accent-glow: rgba(255, 113, 206, 0.3);
-      --border: #ffb0d0;
-      --border-focus: var(--accent);
-      --shadow: 0 4px 20px rgba(255, 113, 206, 0.2);
-      --shadow-glow: 0 0 30px rgba(126, 232, 250, 0.2);
-      --gradient: linear-gradient(135deg, #ff71ce, #7ee8fa, #feff9c);
+      --accent-glow: rgba(255, 106, 213, 0.3);
+      --border: #ffc0e0;
+      --radius: 30px;
+      --shadow: 0 20px 60px rgba(255, 106, 213, 0.15);
     }
 
-    /* THEME 9: LUXURY - Gold on dark */
+    [data-theme="vapor"] body {
+      background:
+        linear-gradient(135deg,
+          rgba(126, 232, 250, 0.2) 0%,
+          rgba(255, 106, 213, 0.2) 50%,
+          rgba(255, 238, 173, 0.2) 100%),
+        linear-gradient(180deg, #ffeef8 0%, #e8f0ff 100%);
+    }
+
+    [data-theme="vapor"] .panel {
+      background: rgba(255, 255, 255, 0.7);
+      border: 2px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+    }
+
+    [data-theme="vapor"] h1 {
+      background: linear-gradient(135deg, #ff6ad5, #7ee8fa, #ffeead);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 600;
+    }
+
+    [data-theme="vapor"] .option-btn {
+      background: rgba(255, 255, 255, 0.6);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+    }
+
+    [data-theme="vapor"] .option-btn.selected {
+      background: linear-gradient(135deg, rgba(255, 106, 213, 0.2), rgba(126, 232, 250, 0.2));
+      border-color: var(--accent);
+      box-shadow: 0 10px 40px rgba(255, 106, 213, 0.2);
+    }
+
+    [data-theme="vapor"] .btn-primary {
+      background: linear-gradient(135deg, #ff6ad5, #7ee8fa);
+      border: none;
+      box-shadow: 0 10px 40px rgba(255, 106, 213, 0.3);
+      border-radius: 20px;
+    }
+
+    /* =============================================
+       THEME 9: LUXURY - Rich gold elegance
+       ============================================= */
     [data-theme="luxury"] {
+      --font-main: 'Playfair Display', serif;
+      --font-mono: 'JetBrains Mono', monospace;
       --bg-primary: #0a0a0a;
-      --bg-secondary: #111111;
+      --bg-secondary: #121212;
       --bg-tertiary: #1a1a1a;
       --bg-hover: #222222;
-      --text-primary: #f5f5f5;
-      --text-secondary: #aaaaaa;
-      --text-muted: #666666;
-      --accent: #d4af37;
-      --accent-secondary: #f4cf67;
-      --accent-glow: rgba(212, 175, 55, 0.3);
-      --border: #333333;
-      --border-focus: var(--accent);
-      --shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-      --shadow-glow: 0 0 40px rgba(212, 175, 55, 0.2);
-      --gradient: linear-gradient(135deg, #d4af37, #f4cf67);
+      --text-primary: #f5f0e8;
+      --text-secondary: #a09080;
+      --text-muted: #605040;
+      --accent: #d4a574;
+      --accent-secondary: #c9a227;
+      --accent-glow: rgba(212, 165, 116, 0.3);
+      --border: #2a2520;
+      --radius: 8px;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     }
 
-    /* THEME 10: PAPER - E-ink inspired */
+    [data-theme="luxury"] body {
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(212, 165, 116, 0.1) 0%, transparent 50%),
+        #0a0a0a;
+    }
+
+    [data-theme="luxury"] .panel {
+      background: linear-gradient(180deg, #151515 0%, #0f0f0f 100%);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(212, 165, 116, 0.1);
+    }
+
+    [data-theme="luxury"] h1 {
+      background: linear-gradient(135deg, #d4a574, #f5deb3, #d4a574);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+    }
+
+    [data-theme="luxury"] .panel-header {
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.3em;
+    }
+
+    [data-theme="luxury"] .option-btn {
+      border: 1px solid var(--border);
+      font-family: 'Inter', sans-serif;
+    }
+
+    [data-theme="luxury"] .option-btn.selected {
+      border-color: var(--accent);
+      background: linear-gradient(180deg, rgba(212, 165, 116, 0.15) 0%, rgba(212, 165, 116, 0.05) 100%);
+      box-shadow: 0 0 30px rgba(212, 165, 116, 0.15);
+    }
+
+    [data-theme="luxury"] .btn-primary {
+      background: linear-gradient(135deg, #d4a574, #c9a227);
+      border: none;
+      color: #0a0a0a;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+    }
+
+    /* =============================================
+       THEME 10: PAPER - Sketch notebook
+       ============================================= */
     [data-theme="paper"] {
-      --bg-primary: #f8f6f1;
-      --bg-secondary: #eeeae3;
-      --bg-tertiary: #e4e0d9;
-      --bg-hover: #dad6cf;
-      --text-primary: #2c2c2c;
-      --text-secondary: #5c5c5c;
-      --text-muted: #8c8c8c;
-      --accent: #2c2c2c;
-      --accent-secondary: #4c4c4c;
-      --accent-glow: rgba(44, 44, 44, 0.1);
-      --border: #ccc8c0;
-      --border-focus: #2c2c2c;
-      --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-      --shadow-glow: none;
-      --gradient: linear-gradient(135deg, #3c3c3c, #2c2c2c);
+      --font-main: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --bg-primary: #faf8f5;
+      --bg-secondary: #f5f2ed;
+      --bg-tertiary: #efebe5;
+      --bg-hover: #e8e4dd;
+      --text-primary: #2d2a26;
+      --text-secondary: #5c5752;
+      --text-muted: #8c8580;
+      --accent: #e85d04;
+      --accent-secondary: #2d2a26;
+      --accent-glow: rgba(232, 93, 4, 0.2);
+      --border: #d4cfc7;
+      --radius: 4px;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    [data-theme="paper"] body {
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 27px, #e8e4dd 27px, #e8e4dd 28px),
+        #faf8f5;
+    }
+
+    [data-theme="paper"] .panel {
+      background: #fffdf9;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    [data-theme="paper"] .panel::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--accent);
+      border-radius: 3px 0 0 3px;
+    }
+
+    [data-theme="paper"] h1 {
+      color: var(--text-primary);
+      font-weight: 600;
+      position: relative;
+      display: inline-block;
+    }
+
+    [data-theme="paper"] h1::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -4px;
+      height: 3px;
+      background: var(--accent);
+    }
+
+    [data-theme="paper"] .option-btn {
+      border: 2px dashed var(--border);
+      background: #fffdf9;
+    }
+
+    [data-theme="paper"] .option-btn.selected {
+      border-style: solid;
+      border-color: var(--accent);
+      background: rgba(232, 93, 4, 0.05);
+    }
+
+    [data-theme="paper"] .btn-primary {
+      background: var(--accent);
+      border: none;
+      box-shadow: 0 4px 12px rgba(232, 93, 4, 0.3);
+    }
+
+    [data-theme="paper"] .panel-header::before {
+      background: var(--accent);
     }
 
     /* =============================================
        BASE STYLES
        ============================================= */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: var(--font-main);
       background: var(--bg-primary);
@@ -227,12 +733,15 @@
       min-height: 100vh;
       padding: 20px;
       transition: background var(--transition), color var(--transition);
+      position: relative;
     }
 
     .container {
       max-width: 1400px;
       margin: 0 auto;
       padding: 0 20px;
+      position: relative;
+      z-index: 1;
     }
 
     /* =============================================
@@ -245,19 +754,7 @@
 
     h1 {
       font-size: 2rem;
-      font-weight: 700;
       margin-bottom: 8px;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    [data-theme="brutalist"] h1,
-    [data-theme="paper"] h1,
-    [data-theme="minimal"] h1 {
-      background: none;
-      -webkit-text-fill-color: var(--text-primary);
     }
 
     .info {
@@ -269,52 +766,63 @@
     .theme-switcher {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
       justify-content: center;
-      padding: 16px;
+      padding: 20px;
       background: var(--bg-secondary);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius);
       border: 1px solid var(--border);
       margin-bottom: 24px;
     }
 
     .theme-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 3px solid transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 16px;
+      background: var(--bg-tertiary);
+      border: 2px solid transparent;
+      border-radius: var(--radius);
       cursor: pointer;
       transition: all var(--transition);
-      position: relative;
-      overflow: hidden;
+      min-width: 80px;
     }
 
     .theme-btn:hover {
-      transform: scale(1.15);
+      background: var(--bg-hover);
+      transform: translateY(-2px);
     }
 
     .theme-btn.active {
       border-color: var(--accent);
-      box-shadow: var(--shadow-glow);
+      background: var(--bg-hover);
     }
 
-    .theme-btn[data-theme="cyber"] { background: linear-gradient(135deg, #0a0a0f, #00f0ff); }
-    .theme-btn[data-theme="minimal"] { background: linear-gradient(135deg, #fff, #000); }
-    .theme-btn[data-theme="synthwave"] { background: linear-gradient(135deg, #1a1025, #ff71ce); }
-    .theme-btn[data-theme="neumorphic"] { background: linear-gradient(135deg, #e0e5ec, #6366f1); }
-    .theme-btn[data-theme="glass"] { background: linear-gradient(135deg, #0f0f19, #60a5fa); }
-    .theme-btn[data-theme="terminal"] { background: linear-gradient(135deg, #0d0d0d, #00ff00); }
-    .theme-btn[data-theme="brutalist"] { background: linear-gradient(135deg, #f0f0f0, #ff0000); }
-    .theme-btn[data-theme="vapor"] { background: linear-gradient(135deg, #ffe6f0, #ff71ce); }
-    .theme-btn[data-theme="luxury"] { background: linear-gradient(135deg, #0a0a0a, #d4af37); }
-    .theme-btn[data-theme="paper"] { background: linear-gradient(135deg, #f8f6f1, #2c2c2c); }
+    .theme-preview {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
 
-    .theme-label {
+    .theme-btn[data-theme="cyber"] .theme-preview { background: linear-gradient(135deg, #050508, #00f0ff); }
+    .theme-btn[data-theme="minimal"] .theme-preview { background: linear-gradient(135deg, #ffffff, #1a1a1a); border: 1px solid #e5e5e5; }
+    .theme-btn[data-theme="synthwave"] .theme-preview { background: linear-gradient(180deg, #1a0a2e, #ff2975); }
+    .theme-btn[data-theme="neumorphic"] .theme-preview { background: #e0e5ec; box-shadow: 3px 3px 6px #b8bec5, -3px -3px 6px #ffffff; }
+    .theme-btn[data-theme="glass"] .theme-preview { background: linear-gradient(135deg, #0f0f23, #818cf8); }
+    .theme-btn[data-theme="terminal"] .theme-preview { background: linear-gradient(135deg, #0a0a0a, #00ff00); }
+    .theme-btn[data-theme="brutalist"] .theme-preview { background: #d4d4d4; border: 2px solid #000; }
+    .theme-btn[data-theme="vapor"] .theme-preview { background: linear-gradient(135deg, #ff6ad5, #7ee8fa); }
+    .theme-btn[data-theme="luxury"] .theme-preview { background: linear-gradient(135deg, #0a0a0a, #d4a574); }
+    .theme-btn[data-theme="paper"] .theme-preview { background: #faf8f5; border: 2px dashed #d4cfc7; }
+
+    .theme-name {
       font-size: 0.7rem;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+      font-weight: 500;
     }
 
     /* =============================================
@@ -322,7 +830,7 @@
        ============================================= */
     .dropzone {
       border: 2px dashed var(--border);
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius);
       padding: 48px 24px;
       text-align: center;
       cursor: pointer;
@@ -339,7 +847,7 @@
     .dropzone.dragover {
       border-color: var(--accent);
       background: var(--bg-hover);
-      box-shadow: var(--shadow-glow);
+      box-shadow: 0 0 30px var(--accent-glow);
     }
 
     .dropzone.minimized {
@@ -361,6 +869,78 @@
     input[type="file"] { display: none; }
 
     /* =============================================
+       OPTION BUTTON GROUPS (Replaces Dropdowns)
+       ============================================= */
+    .option-group {
+      display: grid;
+      gap: 10px;
+    }
+
+    .option-group.cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .option-group.cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .option-group.cols-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .option-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 12px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all var(--transition);
+      text-align: center;
+    }
+
+    .option-btn:hover {
+      background: var(--bg-hover);
+    }
+
+    .option-icon {
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .option-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .option-desc {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    /* Compact option buttons for shades */
+    .option-btn.compact {
+      padding: 10px 8px;
+    }
+
+    .option-btn.compact .option-icon {
+      font-size: 1.2rem;
+    }
+
+    .option-btn.compact .option-label {
+      font-size: 0.75rem;
+    }
+
+    .option-btn.compact .option-desc {
+      font-size: 0.65rem;
+    }
+
+    /* =============================================
        CUSTOM BUTTONS
        ============================================= */
     .btn {
@@ -372,7 +952,7 @@
       background: var(--bg-tertiary);
       color: var(--text-primary);
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius);
       font-family: var(--font-main);
       font-size: 0.9rem;
       font-weight: 500;
@@ -382,7 +962,6 @@
 
     .btn:hover {
       background: var(--bg-hover);
-      border-color: var(--accent);
       transform: translateY(-2px);
     }
 
@@ -397,21 +976,13 @@
     }
 
     .btn-primary {
-      background: var(--gradient);
+      background: var(--accent);
       border: none;
       color: #fff;
       font-weight: 600;
-      box-shadow: var(--shadow);
-    }
-
-    [data-theme="minimal"] .btn-primary,
-    [data-theme="brutalist"] .btn-primary,
-    [data-theme="paper"] .btn-primary {
-      background: var(--accent);
     }
 
     .btn-primary:hover {
-      box-shadow: var(--shadow-glow);
       transform: translateY(-2px);
     }
 
@@ -427,51 +998,6 @@
     }
 
     /* =============================================
-       CUSTOM SELECT DROPDOWN
-       ============================================= */
-    .select-wrapper {
-      position: relative;
-    }
-
-    .select-wrapper::after {
-      content: '';
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 0;
-      height: 0;
-      border-left: 5px solid transparent;
-      border-right: 5px solid transparent;
-      border-top: 6px solid var(--text-secondary);
-      pointer-events: none;
-    }
-
-    .custom-select {
-      width: 100%;
-      padding: 14px 40px 14px 16px;
-      background: var(--bg-tertiary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      color: var(--text-primary);
-      font-family: var(--font-main);
-      font-size: 0.9rem;
-      cursor: pointer;
-      appearance: none;
-      transition: all var(--transition);
-    }
-
-    .custom-select:hover {
-      border-color: var(--text-muted);
-    }
-
-    .custom-select:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
-    }
-
-    /* =============================================
        CUSTOM SLIDER
        ============================================= */
     .slider-container {
@@ -484,9 +1010,9 @@
       -webkit-appearance: none;
       appearance: none;
       flex: 1;
-      height: 6px;
+      height: 8px;
       background: var(--bg-tertiary);
-      border-radius: 3px;
+      border-radius: 4px;
       cursor: pointer;
       transition: all var(--transition);
     }
@@ -494,45 +1020,38 @@
     .custom-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 20px;
-      height: 20px;
-      background: var(--gradient);
+      width: 24px;
+      height: 24px;
+      background: var(--accent);
       border-radius: 50%;
       cursor: pointer;
-      box-shadow: var(--shadow);
+      box-shadow: 0 2px 8px var(--accent-glow);
       transition: all var(--transition);
     }
 
-    [data-theme="minimal"] .custom-slider::-webkit-slider-thumb,
-    [data-theme="brutalist"] .custom-slider::-webkit-slider-thumb,
-    [data-theme="paper"] .custom-slider::-webkit-slider-thumb {
-      background: var(--accent);
-    }
-
     .custom-slider::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
-      box-shadow: var(--shadow-glow);
+      transform: scale(1.15);
     }
 
     .custom-slider::-moz-range-thumb {
-      width: 20px;
-      height: 20px;
-      background: var(--gradient);
+      width: 24px;
+      height: 24px;
+      background: var(--accent);
       border: none;
       border-radius: 50%;
       cursor: pointer;
     }
 
     .slider-value {
-      min-width: 48px;
-      padding: 6px 10px;
+      min-width: 52px;
+      padding: 8px 12px;
       background: var(--bg-tertiary);
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius);
       text-align: center;
       font-family: var(--font-mono);
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: var(--accent);
-      font-weight: 500;
+      font-weight: 600;
     }
 
     /* =============================================
@@ -543,7 +1062,7 @@
       padding: 14px 16px;
       background: var(--bg-tertiary);
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius);
       color: var(--text-primary);
       font-family: var(--font-mono);
       font-size: 0.85rem;
@@ -566,21 +1085,10 @@
     .panel {
       background: var(--bg-secondary);
       border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px;
+      border-radius: var(--radius);
+      padding: 24px;
       margin-bottom: 20px;
-      box-shadow: var(--shadow);
       transition: all var(--transition);
-    }
-
-    [data-theme="glass"] .panel {
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-    }
-
-    [data-theme="neumorphic"] .panel {
-      border: none;
-      box-shadow: var(--shadow);
     }
 
     .panel-header {
@@ -589,24 +1097,18 @@
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 1.5px;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .panel-header::before {
       content: '';
-      width: 3px;
-      height: 14px;
-      background: var(--gradient);
-      border-radius: 2px;
-    }
-
-    [data-theme="minimal"] .panel-header::before,
-    [data-theme="brutalist"] .panel-header::before,
-    [data-theme="paper"] .panel-header::before {
+      width: 4px;
+      height: 16px;
       background: var(--accent);
+      border-radius: 2px;
     }
 
     /* =============================================
@@ -647,7 +1149,7 @@
       padding: 16px 20px;
       background: var(--bg-secondary);
       border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius);
     }
 
     .counter {
@@ -674,11 +1176,11 @@
 
     .original-img {
       width: 100%;
-      max-width: 220px;
+      max-width: 200px;
       height: auto;
       aspect-ratio: 480 / 800;
       object-fit: contain;
-      border-radius: var(--radius-md);
+      border-radius: var(--radius);
       background: var(--bg-tertiary);
       border: 1px solid var(--border);
     }
@@ -699,7 +1201,7 @@
        CONTROL GROUPS
        ============================================= */
     .control-group {
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
 
     .control-group:last-child {
@@ -709,9 +1211,9 @@
     .control-label {
       display: block;
       font-size: 0.8rem;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--text-secondary);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -726,7 +1228,7 @@
       padding: 16px;
       background: var(--bg-secondary);
       border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius);
       margin-bottom: 20px;
     }
 
@@ -748,7 +1250,7 @@
       flex-shrink: 0;
       width: 42px;
       height: 70px;
-      border-radius: var(--radius-sm);
+      border-radius: 4px;
       cursor: pointer;
       border: 2px solid transparent;
       overflow: hidden;
@@ -821,6 +1323,30 @@
       gap: 8px;
     }
 
+    /* Small option group for apply panel */
+    .apply-row .option-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .apply-row .option-btn {
+      padding: 8px 12px;
+      flex: none;
+    }
+
+    .apply-row .option-btn .option-icon {
+      display: none;
+    }
+
+    .apply-row .option-btn .option-desc {
+      display: none;
+    }
+
+    .apply-row .option-btn .option-label {
+      font-size: 0.75rem;
+    }
+
     /* =============================================
        STATUS
        ============================================= */
@@ -829,7 +1355,7 @@
       padding: 16px;
       background: var(--bg-secondary);
       border: 1px solid var(--accent);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius);
       color: var(--accent);
       margin-bottom: 20px;
       display: none;
@@ -1000,13 +1526,35 @@
         width: 100%;
       }
 
+      .option-group.cols-4 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
       .theme-switcher {
         padding: 12px;
+        gap: 6px;
       }
 
       .theme-btn {
-        width: 30px;
-        height: 30px;
+        padding: 8px 10px;
+        min-width: 60px;
+      }
+
+      .theme-preview {
+        width: 24px;
+        height: 24px;
+      }
+
+      .theme-name {
+        font-size: 0.6rem;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .option-group.cols-2,
+      .option-group.cols-3,
+      .option-group.cols-4 {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -1015,23 +1563,50 @@
   <div class="container">
     <header class="header">
       <h1>E-Reader Converter</h1>
-      <p class="info">Converts to 480x800 BMP for Xteink X4</p>
+      <p class="info">Converts to 480×800 BMP for Xteink X4</p>
     </header>
 
     <div class="theme-switcher">
-      <div style="width: 100%; text-align: center;">
-        <div class="theme-label">Choose Style</div>
-      </div>
-      <button class="theme-btn active" data-theme="cyber" title="Cyber"></button>
-      <button class="theme-btn" data-theme="minimal" title="Minimal"></button>
-      <button class="theme-btn" data-theme="synthwave" title="Synthwave"></button>
-      <button class="theme-btn" data-theme="neumorphic" title="Neumorphic"></button>
-      <button class="theme-btn" data-theme="glass" title="Glass"></button>
-      <button class="theme-btn" data-theme="terminal" title="Terminal"></button>
-      <button class="theme-btn" data-theme="brutalist" title="Brutalist"></button>
-      <button class="theme-btn" data-theme="vapor" title="Vapor"></button>
-      <button class="theme-btn" data-theme="luxury" title="Luxury"></button>
-      <button class="theme-btn" data-theme="paper" title="Paper"></button>
+      <button class="theme-btn active" data-theme="cyber" title="Cyber">
+        <div class="theme-preview"></div>
+        <span class="theme-name">Cyber</span>
+      </button>
+      <button class="theme-btn" data-theme="minimal" title="Minimal">
+        <div class="theme-preview"></div>
+        <span class="theme-name">Minimal</span>
+      </button>
+      <button class="theme-btn" data-theme="synthwave" title="Synthwave">
+        <div class="theme-preview"></div>
+        <span class="theme-name">Synth</span>
+      </button>
+      <button class="theme-btn" data-theme="neumorphic" title="Neumorphic">
+        <div class="theme-preview"></div>
+        <span class="theme-name">Neumo</span>
+      </button>
+      <button class="theme-btn" data-theme="glass" title="Glass">
+        <div class="theme-preview"></div>
+        <span class="theme-name">Glass</span>
+      </button>
+      <button class="theme-btn" data-theme="terminal" title="Terminal">
+        <div class="theme-preview"></div>
+        <span class="theme-name">Term</span>
+      </button>
+      <button class="theme-btn" data-theme="brutalist" title="Brutalist">
+        <div class="theme-preview"></div>
+        <span class="theme-name">Brutal</span>
+      </button>
+      <button class="theme-btn" data-theme="vapor" title="Vapor">
+        <div class="theme-preview"></div>
+        <span class="theme-name">Vapor</span>
+      </button>
+      <button class="theme-btn" data-theme="luxury" title="Luxury">
+        <div class="theme-preview"></div>
+        <span class="theme-name">Luxury</span>
+      </button>
+      <button class="theme-btn" data-theme="paper" title="Paper">
+        <div class="theme-preview"></div>
+        <span class="theme-name">Paper</span>
+      </button>
     </div>
 
     <div class="dropzone" id="dropzone">
@@ -1064,13 +1639,27 @@
 
             <div class="control-group">
               <label class="control-label">Fit Mode</label>
-              <div class="select-wrapper">
-                <select class="custom-select" id="fitSelect">
-                  <option value="crop">Center crop (fill)</option>
-                  <option value="letterbox-white">Letterbox (white)</option>
-                  <option value="letterbox-black">Letterbox (black)</option>
-                  <option value="stretch">Stretch (smush)</option>
-                </select>
+              <div class="option-group cols-2" id="fitGroup">
+                <button class="option-btn selected" data-value="crop">
+                  <span class="option-icon">⬚</span>
+                  <span class="option-label">Center Crop</span>
+                  <span class="option-desc">Fills frame, trims edges</span>
+                </button>
+                <button class="option-btn" data-value="letterbox-white">
+                  <span class="option-icon">▢</span>
+                  <span class="option-label">Letterbox Light</span>
+                  <span class="option-desc">Fits inside, white bars</span>
+                </button>
+                <button class="option-btn" data-value="letterbox-black">
+                  <span class="option-icon">■</span>
+                  <span class="option-label">Letterbox Dark</span>
+                  <span class="option-desc">Fits inside, black bars</span>
+                </button>
+                <button class="option-btn" data-value="stretch">
+                  <span class="option-icon">↔</span>
+                  <span class="option-label">Stretch</span>
+                  <span class="option-desc">Distorts to fill frame</span>
+                </button>
               </div>
             </div>
 
@@ -1083,19 +1672,48 @@
             </div>
 
             <div class="control-group">
-              <label class="control-label">Posterize / Dither</label>
-              <div class="select-wrapper">
-                <select class="custom-select" id="posterizeSelect">
-                  <option value="off">Off (full grayscale)</option>
-                  <option value="16">16 shades</option>
-                  <option value="8">8 shades</option>
-                  <option value="4">4 shades</option>
-                  <option value="2">2 shades (B&W)</option>
-                  <option value="16d">16 shades + dither</option>
-                  <option value="8d">8 shades + dither</option>
-                  <option value="4d">4 shades + dither</option>
-                  <option value="2d">2 shades + dither</option>
-                </select>
+              <label class="control-label">Shades</label>
+              <div class="option-group cols-4" id="shadesGroup">
+                <button class="option-btn compact selected" data-value="off">
+                  <span class="option-icon">◐</span>
+                  <span class="option-label">Full</span>
+                  <span class="option-desc">256 grays</span>
+                </button>
+                <button class="option-btn compact" data-value="16">
+                  <span class="option-icon">▓</span>
+                  <span class="option-label">16</span>
+                  <span class="option-desc">Smooth</span>
+                </button>
+                <button class="option-btn compact" data-value="8">
+                  <span class="option-icon">▒</span>
+                  <span class="option-label">8</span>
+                  <span class="option-desc">Medium</span>
+                </button>
+                <button class="option-btn compact" data-value="4">
+                  <span class="option-icon">░</span>
+                  <span class="option-label">4</span>
+                  <span class="option-desc">Poster</span>
+                </button>
+                <button class="option-btn compact" data-value="2">
+                  <span class="option-icon">◧</span>
+                  <span class="option-label">2</span>
+                  <span class="option-desc">B&W</span>
+                </button>
+                <button class="option-btn compact" data-value="16d">
+                  <span class="option-icon">▓</span>
+                  <span class="option-label">16+D</span>
+                  <span class="option-desc">Dithered</span>
+                </button>
+                <button class="option-btn compact" data-value="8d">
+                  <span class="option-icon">▒</span>
+                  <span class="option-label">8+D</span>
+                  <span class="option-desc">Dithered</span>
+                </button>
+                <button class="option-btn compact" data-value="4d">
+                  <span class="option-icon">░</span>
+                  <span class="option-label">4+D</span>
+                  <span class="option-desc">Dithered</span>
+                </button>
               </div>
             </div>
 
@@ -1112,14 +1730,19 @@
             <div class="apply-row">
               <div class="control-group">
                 <label class="control-label">Fit</label>
-                <div class="select-wrapper">
-                  <select class="custom-select" id="applyFit">
-                    <option value="">--</option>
-                    <option value="crop">Crop</option>
-                    <option value="letterbox-white">LB White</option>
-                    <option value="letterbox-black">LB Black</option>
-                    <option value="stretch">Stretch</option>
-                  </select>
+                <div class="option-group" id="applyFitGroup">
+                  <button class="option-btn" data-value="crop">
+                    <span class="option-label">Crop</span>
+                  </button>
+                  <button class="option-btn" data-value="letterbox-white">
+                    <span class="option-label">LB Light</span>
+                  </button>
+                  <button class="option-btn" data-value="letterbox-black">
+                    <span class="option-label">LB Dark</span>
+                  </button>
+                  <button class="option-btn" data-value="stretch">
+                    <span class="option-label">Stretch</span>
+                  </button>
                 </div>
               </div>
               <div class="control-group">
@@ -1129,26 +1752,9 @@
                   <span class="slider-value" id="applyContrastValue">0</span>
                 </div>
               </div>
-              <div class="control-group">
-                <label class="control-label">Posterize</label>
-                <div class="select-wrapper">
-                  <select class="custom-select" id="applyPosterize">
-                    <option value="">--</option>
-                    <option value="off">Off</option>
-                    <option value="16">16</option>
-                    <option value="8">8</option>
-                    <option value="4">4</option>
-                    <option value="2">2</option>
-                    <option value="16d">16+D</option>
-                    <option value="8d">8+D</option>
-                    <option value="4d">4+D</option>
-                    <option value="2d">2+D</option>
-                  </select>
-                </div>
-              </div>
               <div class="btn-group">
                 <button class="btn btn-sm" id="applyBtn">Apply</button>
-                <button class="btn btn-sm btn-danger" id="clearBtn">Clear</button>
+                <button class="btn btn-sm btn-danger" id="clearBtn">Clear All</button>
               </div>
             </div>
           </div>
@@ -1202,6 +1808,36 @@
       });
     }
 
+    // Option Group Handler
+    function setupOptionGroup(groupId, onChange) {
+      const group = document.getElementById(groupId);
+      if (!group) return;
+      const buttons = group.querySelectorAll('.option-btn');
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          buttons.forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          if (onChange) onChange(btn.dataset.value);
+        });
+      });
+    }
+
+    function getOptionGroupValue(groupId) {
+      const group = document.getElementById(groupId);
+      if (!group) return null;
+      const selected = group.querySelector('.option-btn.selected');
+      return selected ? selected.dataset.value : null;
+    }
+
+    function setOptionGroupValue(groupId, value) {
+      const group = document.getElementById(groupId);
+      if (!group) return;
+      const buttons = group.querySelectorAll('.option-btn');
+      buttons.forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.value === value);
+      });
+    }
+
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileInput');
     const editor = document.getElementById('editor');
@@ -1216,10 +1852,8 @@
     const fileInfoEl = document.getElementById('fileInfo');
     const deviceFrame = document.getElementById('deviceFrame');
 
-    const fitSelect = document.getElementById('fitSelect');
     const contrastSlider = document.getElementById('contrastSlider');
     const contrastValue = document.getElementById('contrastValue');
-    const posterizeSelect = document.getElementById('posterizeSelect');
     const filenameInput = document.getElementById('filenameInput');
 
     const prevBtn = document.getElementById('prevBtn');
@@ -1233,6 +1867,11 @@
     let queue = [];
     let currentIdx = 0;
     let idCounter = 0;
+
+    // Setup option groups
+    setupOptionGroup('fitGroup', () => { saveCurrentSettings(); updatePreview(); });
+    setupOptionGroup('shadesGroup', () => { saveCurrentSettings(); updatePreview(); });
+    setupOptionGroup('applyFitGroup', null);
 
     // Device color toggle
     colorBlack.onclick = () => {
@@ -1344,10 +1983,10 @@
       if (!item.img) return;
       originalImg.src = item.img.src;
       fileInfoEl.innerHTML = `<strong>${item.file.name}</strong><br>${item.img.width} × ${item.img.height}`;
-      fitSelect.value = item.fit;
+      setOptionGroupValue('fitGroup', item.fit);
       contrastSlider.value = item.contrast;
       contrastValue.textContent = item.contrast;
-      posterizeSelect.value = item.posterize;
+      setOptionGroupValue('shadesGroup', item.posterize);
       filenameInput.value = item.filename;
       updatePreview();
       renderThumbnails();
@@ -1357,34 +1996,34 @@
     function saveCurrentSettings() {
       const item = queue[currentIdx];
       if (!item) return;
-      item.fit = fitSelect.value;
+      item.fit = getOptionGroupValue('fitGroup') || 'crop';
       item.contrast = parseInt(contrastSlider.value);
-      item.posterize = posterizeSelect.value;
+      item.posterize = getOptionGroupValue('shadesGroup') || 'off';
       item.filename = filenameInput.value;
     }
 
     function updatePreview() {
       const item = queue[currentIdx];
       if (!item || !item.img) return;
+      const fit = getOptionGroupValue('fitGroup') || 'crop';
+      const posterize = getOptionGroupValue('shadesGroup') || 'off';
       const fullCanvas = document.createElement('canvas');
       fullCanvas.width = WIDTH;
       fullCanvas.height = HEIGHT;
       const fullCtx = fullCanvas.getContext('2d');
-      drawFitted(fullCtx, item.img, fitSelect.value);
+      drawFitted(fullCtx, item.img, fit);
       const imageData = fullCtx.getImageData(0, 0, WIDTH, HEIGHT);
       applyContrast(imageData, parseInt(contrastSlider.value));
-      applyPosterize(imageData, posterizeSelect.value);
+      applyPosterize(imageData, posterize);
       fullCtx.putImageData(imageData, 0, 0);
       previewCtx.drawImage(fullCanvas, 0, 0);
     }
 
-    fitSelect.onchange = () => { saveCurrentSettings(); updatePreview(); };
     contrastSlider.oninput = () => {
       contrastValue.textContent = contrastSlider.value;
       saveCurrentSettings();
       updatePreview();
     };
-    posterizeSelect.onchange = () => { saveCurrentSettings(); updatePreview(); };
     filenameInput.oninput = () => { saveCurrentSettings(); };
 
     prevBtn.onclick = () => { if (currentIdx > 0) showImage(currentIdx - 1); };
@@ -1395,13 +2034,11 @@
     };
 
     document.getElementById('applyBtn').onclick = () => {
-      const fit = document.getElementById('applyFit').value;
+      const fit = getOptionGroupValue('applyFitGroup');
       const contrast = parseInt(document.getElementById('applyContrast').value);
-      const posterize = document.getElementById('applyPosterize').value;
       for (const item of queue) {
         if (fit) item.fit = fit;
         item.contrast = contrast;
-        if (posterize) item.posterize = posterize;
       }
       showImage(currentIdx);
     };
