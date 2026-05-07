@@ -11,7 +11,7 @@
       background: #111; color: #eee;
       min-height: 100vh; padding: 20px;
     }
-    .container { max-width: 800px; margin: 0 auto; }
+    .container { max-width: 900px; margin: 0 auto; }
     h1 { font-size: 1.5rem; margin-bottom: 10px; text-align: center; }
     .info { font-size: 0.85rem; color: #888; margin-bottom: 20px; text-align: center; }
 
@@ -23,12 +23,14 @@
     }
     .dropzone:hover { border-color: #666; }
     .dropzone.dragover { border-color: #fff; background: #222; }
+    .dropzone.minimized { padding: 12px; margin-bottom: 16px; }
+    .dropzone.minimized p { font-size: 0.85rem; }
     input[type="file"] { display: none; }
 
     .btn {
-      display: inline-block; padding: 12px 20px;
+      display: inline-block; padding: 10px 16px;
       background: #333; color: #fff; border: none;
-      border-radius: 8px; font-size: 1rem; cursor: pointer;
+      border-radius: 8px; font-size: 0.9rem; cursor: pointer;
     }
     .btn:hover { background: #444; }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -36,79 +38,141 @@
     .btn-primary:hover { background: #3b7; }
     .btn-danger { background: #a33; }
     .btn-danger:hover { background: #c44; }
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
 
-    /* Apply to All Panel */
-    .apply-panel {
-      display: none;
-      background: #1a1a1a; border-radius: 12px;
-      padding: 16px; margin-bottom: 20px;
+    /* Editor */
+    .editor { display: none; }
+    .editor.visible { display: block; }
+
+    .editor-main {
+      display: flex; gap: 24px; margin-bottom: 20px;
+      flex-wrap: wrap; justify-content: center;
+    }
+
+    .preview-section { text-align: center; }
+    .preview-label {
+      font-size: 0.75rem; color: #666; margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .preview-container {
+      display: flex; gap: 16px; justify-content: center;
+      align-items: flex-start;
+    }
+    .preview-box {
+      background: #1a1a1a; border-radius: 8px; padding: 8px;
       border: 1px solid #333;
     }
-    .apply-panel.visible { display: block; }
-    .apply-panel h3 { font-size: 1rem; margin-bottom: 12px; color: #aaa; }
-    .apply-row {
-      display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;
-    }
-    .apply-row .control-group { flex: 1; min-width: 140px; }
-    .apply-row .btn-group { display: flex; gap: 8px; }
-
-    /* Queue */
-    #queue { margin-bottom: 20px; }
-    .queue-item {
-      display: flex; gap: 12px; padding: 12px;
-      background: #1a1a1a; border-radius: 10px;
-      margin-bottom: 10px; border: 1px solid #333;
-      position: relative;
-    }
-    .queue-item .thumbnail {
-      width: 60px; height: 100px; object-fit: cover;
-      border-radius: 6px; background: #222; flex-shrink: 0;
-    }
-    .queue-item .preview-canvas {
-      width: 60px; height: 100px; border-radius: 6px;
-      background: #222; flex-shrink: 0;
+    .preview-canvas {
+      display: block; border-radius: 4px;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
     }
-    .queue-item .details { flex: 1; min-width: 0; }
-    .queue-item .file-info {
-      font-size: 0.8rem; color: #888; margin-bottom: 8px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    .preview-canvas.large { width: 192px; height: 320px; }
+    .original-img {
+      width: 192px; height: 320px; object-fit: contain;
+      border-radius: 4px; background: #000;
     }
-    .queue-item .controls {
-      display: flex; flex-wrap: wrap; gap: 8px;
-    }
-    .queue-item .remove-btn {
-      position: absolute; top: 8px; right: 8px;
-      width: 24px; height: 24px; border-radius: 50%;
-      background: #333; border: none; color: #888;
-      cursor: pointer; font-size: 16px; line-height: 1;
-    }
-    .queue-item .remove-btn:hover { background: #a33; color: #fff; }
 
-    .control-group { display: flex; flex-direction: column; gap: 4px; }
-    .control-group label { font-size: 0.75rem; color: #888; }
+    .controls-section {
+      flex: 1; min-width: 280px; max-width: 400px;
+    }
+    .file-info {
+      font-size: 0.85rem; color: #888; margin-bottom: 16px;
+      padding: 10px; background: #1a1a1a; border-radius: 8px;
+    }
+    .file-info strong { color: #ccc; }
+
+    .control-group {
+      margin-bottom: 14px;
+    }
+    .control-group label {
+      display: block; font-size: 0.8rem; color: #888;
+      margin-bottom: 6px;
+    }
     .control-group select, .control-group input[type="text"] {
-      padding: 6px 8px; background: #222; border: 1px solid #444;
-      border-radius: 6px; color: #eee; font-size: 0.85rem;
+      width: 100%; padding: 10px 12px;
+      background: #222; border: 1px solid #444;
+      border-radius: 8px; color: #eee; font-size: 0.9rem;
     }
-    .control-group input[type="range"] {
-      width: 100px; accent-color: #2a6;
+    .control-group input[type="text"] { font-family: monospace; }
+    .slider-row {
+      display: flex; align-items: center; gap: 12px;
     }
-    .contrast-value { font-size: 0.75rem; color: #aaa; min-width: 32px; text-align: center; }
-    .filename-input { width: 200px; }
+    .slider-row input[type="range"] {
+      flex: 1; accent-color: #2a6;
+    }
+    .slider-value {
+      min-width: 40px; text-align: center;
+      font-size: 0.9rem; color: #aaa;
+    }
 
-    /* Bottom actions */
+    /* Navigation */
+    .nav-row {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 16px;
+      padding: 12px; background: #1a1a1a; border-radius: 8px;
+    }
+    .nav-row .counter { font-size: 0.9rem; color: #888; }
+    .nav-row .counter strong { color: #eee; }
+    .nav-buttons { display: flex; gap: 8px; }
+
+    /* Thumbnail strip */
+    .thumb-strip {
+      display: flex; gap: 8px; overflow-x: auto;
+      padding: 12px; background: #1a1a1a; border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    .thumb-strip::-webkit-scrollbar { height: 6px; }
+    .thumb-strip::-webkit-scrollbar-track { background: #222; border-radius: 3px; }
+    .thumb-strip::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+    .thumb-item {
+      flex-shrink: 0; width: 48px; height: 80px;
+      border-radius: 6px; cursor: pointer;
+      border: 2px solid transparent;
+      overflow: hidden; position: relative;
+    }
+    .thumb-item.active { border-color: #2a6; }
+    .thumb-item img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .thumb-item .thumb-remove {
+      position: absolute; top: 2px; right: 2px;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: rgba(0,0,0,0.7); border: none; color: #888;
+      cursor: pointer; font-size: 12px; line-height: 1;
+      display: none;
+    }
+    .thumb-item:hover .thumb-remove { display: block; }
+    .thumb-item .thumb-remove:hover { background: #a33; color: #fff; }
+
+    /* Apply to all */
+    .apply-panel {
+      display: none; background: #1a1a1a; border-radius: 8px;
+      padding: 14px; margin-bottom: 16px; border: 1px solid #333;
+    }
+    .apply-panel.visible { display: block; }
+    .apply-panel h3 {
+      font-size: 0.85rem; margin-bottom: 12px; color: #888;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .apply-row {
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;
+    }
+    .apply-row .control-group { flex: 1; min-width: 130px; margin-bottom: 0; }
+    .apply-row .control-group select { padding: 8px 10px; font-size: 0.85rem; }
+    .apply-row .btn-group { display: flex; gap: 8px; }
+
+    /* Actions */
     .actions {
       display: flex; gap: 12px; justify-content: center;
-      flex-wrap: wrap; margin-top: 20px;
+      flex-wrap: wrap; padding-top: 8px;
     }
 
     /* Status */
     .status {
       text-align: center; padding: 12px;
       background: #1a2a1a; border-radius: 8px;
-      color: #4d4; margin-bottom: 15px;
+      color: #4d4; margin-bottom: 16px;
       display: none;
     }
     .status.visible { display: block; }
@@ -125,68 +189,156 @@
     </div>
     <input type="file" id="fileInput" accept="image/*" multiple>
 
-    <div class="apply-panel" id="applyPanel">
-      <h3>Apply to All</h3>
-      <div class="apply-row">
-        <div class="control-group">
-          <label>Fit Mode</label>
-          <select id="applyFit">
-            <option value="">-- keep individual --</option>
-            <option value="crop">Center crop (fill)</option>
-            <option value="letterbox-white">Letterbox (white)</option>
-            <option value="letterbox-black">Letterbox (black)</option>
-            <option value="stretch">Stretch (smush)</option>
-          </select>
+    <div class="editor" id="editor">
+      <div class="nav-row">
+        <div class="counter">
+          Image <strong><span id="currentIndex">1</span></strong> of <strong><span id="totalCount">1</span></strong>
         </div>
-        <div class="control-group">
-          <label>Contrast</label>
-          <div style="display:flex; align-items:center; gap:6px;">
-            <input type="range" id="applyContrast" min="-100" max="100" value="0">
-            <span class="contrast-value" id="applyContrastValue">0</span>
-          </div>
-        </div>
-        <div class="control-group">
-          <label>Posterize</label>
-          <select id="applyPosterize">
-            <option value="">-- keep individual --</option>
-            <option value="off">Off</option>
-            <option value="2">2 shades</option>
-            <option value="4">4 shades</option>
-            <option value="8">8 shades</option>
-            <option value="16">16 shades</option>
-            <option value="2d">2 shades + dither</option>
-            <option value="4d">4 shades + dither</option>
-            <option value="8d">8 shades + dither</option>
-            <option value="16d">16 shades + dither</option>
-          </select>
-        </div>
-        <div class="btn-group">
-          <button class="btn" id="applyBtn">Apply</button>
-          <button class="btn btn-danger" id="clearBtn">Clear queue</button>
+        <div class="nav-buttons">
+          <button class="btn btn-sm" id="prevBtn">&larr; Prev</button>
+          <button class="btn btn-sm" id="nextBtn">Next &rarr;</button>
         </div>
       </div>
-    </div>
 
-    <div id="queue"></div>
+      <div class="editor-main">
+        <div class="preview-section">
+          <div class="preview-container">
+            <div class="preview-box">
+              <div class="preview-label">Original</div>
+              <img class="original-img" id="originalImg">
+            </div>
+            <div class="preview-box">
+              <div class="preview-label">Output Preview</div>
+              <canvas class="preview-canvas large" id="previewCanvas" width="192" height="320"></canvas>
+            </div>
+          </div>
+        </div>
 
-    <div class="status" id="status"></div>
+        <div class="controls-section">
+          <div class="file-info" id="fileInfo"></div>
 
-    <div class="actions">
-      <button class="btn btn-primary" id="convertAllBtn" disabled>Convert & Download All</button>
+          <div class="control-group">
+            <label>Fit Mode</label>
+            <select id="fitSelect">
+              <option value="crop">Center crop (fill)</option>
+              <option value="letterbox-white">Letterbox (white)</option>
+              <option value="letterbox-black">Letterbox (black)</option>
+              <option value="stretch">Stretch (smush)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>Contrast</label>
+            <div class="slider-row">
+              <input type="range" id="contrastSlider" min="-100" max="100" value="0">
+              <span class="slider-value" id="contrastValue">0</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label>Posterize / Dither</label>
+            <select id="posterizeSelect">
+              <option value="off">Off</option>
+              <option value="2">2 shades</option>
+              <option value="4">4 shades</option>
+              <option value="8">8 shades</option>
+              <option value="16">16 shades</option>
+              <option value="2d">2 shades + dither</option>
+              <option value="4d">4 shades + dither</option>
+              <option value="8d">8 shades + dither</option>
+              <option value="16d">16 shades + dither</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>Output Filename</label>
+            <input type="text" id="filenameInput">
+          </div>
+        </div>
+      </div>
+
+      <div class="thumb-strip" id="thumbStrip"></div>
+
+      <div class="apply-panel" id="applyPanel">
+        <h3>Apply to All Images</h3>
+        <div class="apply-row">
+          <div class="control-group">
+            <label>Fit</label>
+            <select id="applyFit">
+              <option value="">-- keep --</option>
+              <option value="crop">Center crop</option>
+              <option value="letterbox-white">Letterbox (white)</option>
+              <option value="letterbox-black">Letterbox (black)</option>
+              <option value="stretch">Stretch</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label>Contrast</label>
+            <div class="slider-row">
+              <input type="range" id="applyContrast" min="-100" max="100" value="0">
+              <span class="slider-value" id="applyContrastValue">0</span>
+            </div>
+          </div>
+          <div class="control-group">
+            <label>Posterize</label>
+            <select id="applyPosterize">
+              <option value="">-- keep --</option>
+              <option value="off">Off</option>
+              <option value="2">2 shades</option>
+              <option value="4">4 shades</option>
+              <option value="8">8 shades</option>
+              <option value="16">16 shades</option>
+              <option value="2d">2 + dither</option>
+              <option value="4d">4 + dither</option>
+              <option value="8d">8 + dither</option>
+              <option value="16d">16 + dither</option>
+            </select>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-sm" id="applyBtn">Apply</button>
+            <button class="btn btn-sm btn-danger" id="clearBtn">Clear All</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="status" id="status"></div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="convertAllBtn">Convert & Download All</button>
+      </div>
     </div>
   </div>
 
   <script>
     const WIDTH = 480, HEIGHT = 800;
+    const PREVIEW_W = 192, PREVIEW_H = 320;
 
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileInput');
-    const queueEl = document.getElementById('queue');
+    const editor = document.getElementById('editor');
+    const thumbStrip = document.getElementById('thumbStrip');
     const applyPanel = document.getElementById('applyPanel');
     const convertAllBtn = document.getElementById('convertAllBtn');
     const statusEl = document.getElementById('status');
 
-    let queue = []; // { id, file, img, fit, contrast, posterize, filename }
+    const originalImg = document.getElementById('originalImg');
+    const previewCanvas = document.getElementById('previewCanvas');
+    const previewCtx = previewCanvas.getContext('2d');
+    const fileInfoEl = document.getElementById('fileInfo');
+
+    const fitSelect = document.getElementById('fitSelect');
+    const contrastSlider = document.getElementById('contrastSlider');
+    const contrastValue = document.getElementById('contrastValue');
+    const posterizeSelect = document.getElementById('posterizeSelect');
+    const filenameInput = document.getElementById('filenameInput');
+
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const currentIndexEl = document.getElementById('currentIndex');
+    const totalCountEl = document.getElementById('totalCount');
+
+    let queue = [];
+    let currentIdx = 0;
     let idCounter = 0;
 
     // Dropzone events
@@ -227,8 +379,12 @@
         const img = new Image();
         img.onload = () => {
           item.img = img;
-          renderQueueItem(item);
-          updatePreview(item);
+          renderThumbnails();
+          // If this is the only/first image, or currently selected, update preview
+          if (queue.length === 1 || queue[currentIdx]?.id === item.id) {
+            showImage(queue.length - 1);
+          }
+          updateUI();
         };
         img.src = e.target.result;
       };
@@ -242,104 +398,97 @@
       return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
     }
 
-    function renderQueueItem(item) {
-      let el = document.getElementById(`item-${item.id}`);
-      if (!el) {
-        el = document.createElement('div');
-        el.className = 'queue-item';
-        el.id = `item-${item.id}`;
-        el.innerHTML = `
-          <img class="thumbnail" src="${item.img.src}">
-          <canvas class="preview-canvas" width="60" height="100"></canvas>
-          <div class="details">
-            <div class="file-info">${item.file.name} (${item.img.width}x${item.img.height})</div>
-            <div class="controls">
-              <div class="control-group">
-                <label>Fit</label>
-                <select class="fit-select">
-                  <option value="crop">Center crop (fill)</option>
-                  <option value="letterbox-white">Letterbox (white)</option>
-                  <option value="letterbox-black">Letterbox (black)</option>
-                  <option value="stretch">Stretch (smush)</option>
-                </select>
-              </div>
-              <div class="control-group">
-                <label>Contrast</label>
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <input type="range" class="contrast-slider" min="-100" max="100" value="0">
-                  <span class="contrast-value">0</span>
-                </div>
-              </div>
-              <div class="control-group">
-                <label>Posterize</label>
-                <select class="posterize-select">
-                  <option value="off">Off</option>
-                  <option value="2">2 shades</option>
-                  <option value="4">4 shades</option>
-                  <option value="8">8 shades</option>
-                  <option value="16">16 shades</option>
-                  <option value="2d">2 shades + dither</option>
-                  <option value="4d">4 shades + dither</option>
-                  <option value="8d">8 shades + dither</option>
-                  <option value="16d">16 shades + dither</option>
-                </select>
-              </div>
-              <div class="control-group">
-                <label>Filename</label>
-                <input type="text" class="filename-input" value="${item.filename}">
-              </div>
-            </div>
-          </div>
-          <button class="remove-btn">&times;</button>
-        `;
-        queueEl.appendChild(el);
-
-        // Event listeners
-        el.querySelector('.fit-select').onchange = (e) => {
-          item.fit = e.target.value;
-          updatePreview(item);
-        };
-        el.querySelector('.contrast-slider').oninput = (e) => {
-          item.contrast = parseInt(e.target.value);
-          el.querySelector('.contrast-value').textContent = item.contrast;
-          updatePreview(item);
-        };
-        el.querySelector('.posterize-select').onchange = (e) => {
-          item.posterize = e.target.value;
-          updatePreview(item);
-        };
-        el.querySelector('.filename-input').oninput = (e) => {
-          item.filename = e.target.value;
-        };
-        el.querySelector('.remove-btn').onclick = () => removeFromQueue(item.id);
-      }
-
-      // Sync UI with item state
-      el.querySelector('.fit-select').value = item.fit;
-      el.querySelector('.contrast-slider').value = item.contrast;
-      el.querySelector('.contrast-value').textContent = item.contrast;
-      el.querySelector('.posterize-select').value = item.posterize;
-      el.querySelector('.filename-input').value = item.filename;
-    }
-
     function removeFromQueue(id) {
-      queue = queue.filter(item => item.id !== id);
-      const el = document.getElementById(`item-${id}`);
-      if (el) el.remove();
+      const idx = queue.findIndex(item => item.id === id);
+      if (idx === -1) return;
+      queue.splice(idx, 1);
+      if (queue.length === 0) {
+        currentIdx = 0;
+      } else if (currentIdx >= queue.length) {
+        currentIdx = queue.length - 1;
+      }
+      renderThumbnails();
+      if (queue.length > 0) {
+        showImage(currentIdx);
+      }
       updateUI();
     }
 
     function updateUI() {
+      const hasImages = queue.length > 0;
+      const allLoaded = queue.every(item => item.img);
+
+      editor.classList.toggle('visible', hasImages);
+      dropzone.classList.toggle('minimized', hasImages);
       applyPanel.classList.toggle('visible', queue.length >= 2);
-      convertAllBtn.disabled = queue.length === 0 || queue.some(item => !item.img);
+      convertAllBtn.disabled = !hasImages || !allLoaded;
+
+      totalCountEl.textContent = queue.length;
+      currentIndexEl.textContent = queue.length > 0 ? currentIdx + 1 : 0;
+      prevBtn.disabled = currentIdx === 0;
+      nextBtn.disabled = currentIdx >= queue.length - 1;
     }
 
-    function updatePreview(item) {
-      const el = document.getElementById(`item-${item.id}`);
-      if (!el || !item.img) return;
+    function renderThumbnails() {
+      thumbStrip.innerHTML = '';
+      queue.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'thumb-item' + (idx === currentIdx ? ' active' : '');
+        div.innerHTML = `
+          <img src="${item.img ? item.img.src : ''}">
+          <button class="thumb-remove">&times;</button>
+        `;
+        div.onclick = (e) => {
+          if (e.target.classList.contains('thumb-remove')) {
+            removeFromQueue(item.id);
+          } else {
+            showImage(idx);
+          }
+        };
+        thumbStrip.appendChild(div);
+      });
+    }
 
-      const canvas = el.querySelector('.preview-canvas');
-      const ctx = canvas.getContext('2d');
+    function showImage(idx) {
+      if (idx < 0 || idx >= queue.length) return;
+
+      // Save current settings before switching
+      if (queue[currentIdx]) {
+        saveCurrentSettings();
+      }
+
+      currentIdx = idx;
+      const item = queue[idx];
+
+      if (!item.img) return;
+
+      // Update UI
+      originalImg.src = item.img.src;
+      fileInfoEl.innerHTML = `<strong>${item.file.name}</strong><br>${item.img.width} x ${item.img.height}`;
+
+      fitSelect.value = item.fit;
+      contrastSlider.value = item.contrast;
+      contrastValue.textContent = item.contrast;
+      posterizeSelect.value = item.posterize;
+      filenameInput.value = item.filename;
+
+      updatePreview();
+      renderThumbnails();
+      updateUI();
+    }
+
+    function saveCurrentSettings() {
+      const item = queue[currentIdx];
+      if (!item) return;
+      item.fit = fitSelect.value;
+      item.contrast = parseInt(contrastSlider.value);
+      item.posterize = posterizeSelect.value;
+      item.filename = filenameInput.value;
+    }
+
+    function updatePreview() {
+      const item = queue[currentIdx];
+      if (!item || !item.img) return;
 
       // Create full-size processed image
       const fullCanvas = document.createElement('canvas');
@@ -347,16 +496,104 @@
       fullCanvas.height = HEIGHT;
       const fullCtx = fullCanvas.getContext('2d');
 
-      drawFitted(fullCtx, item.img, item.fit);
+      drawFitted(fullCtx, item.img, fitSelect.value);
       const imageData = fullCtx.getImageData(0, 0, WIDTH, HEIGHT);
-      applyContrast(imageData, item.contrast);
-      applyPosterize(imageData, item.posterize);
+      applyContrast(imageData, parseInt(contrastSlider.value));
+      applyPosterize(imageData, posterizeSelect.value);
       fullCtx.putImageData(imageData, 0, 0);
 
       // Scale down to preview
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(fullCanvas, 0, 0, 60, 100);
+      previewCtx.imageSmoothingEnabled = false;
+      previewCtx.drawImage(fullCanvas, 0, 0, PREVIEW_W, PREVIEW_H);
     }
+
+    // Control event listeners
+    fitSelect.onchange = () => { saveCurrentSettings(); updatePreview(); };
+    contrastSlider.oninput = () => {
+      contrastValue.textContent = contrastSlider.value;
+      saveCurrentSettings();
+      updatePreview();
+    };
+    posterizeSelect.onchange = () => { saveCurrentSettings(); updatePreview(); };
+    filenameInput.oninput = () => { saveCurrentSettings(); };
+
+    prevBtn.onclick = () => { if (currentIdx > 0) showImage(currentIdx - 1); };
+    nextBtn.onclick = () => { if (currentIdx < queue.length - 1) showImage(currentIdx + 1); };
+
+    // Apply to all
+    document.getElementById('applyContrast').oninput = (e) => {
+      document.getElementById('applyContrastValue').textContent = e.target.value;
+    };
+
+    document.getElementById('applyBtn').onclick = () => {
+      const fit = document.getElementById('applyFit').value;
+      const contrast = parseInt(document.getElementById('applyContrast').value);
+      const posterize = document.getElementById('applyPosterize').value;
+
+      for (const item of queue) {
+        if (fit) item.fit = fit;
+        item.contrast = contrast;
+        if (posterize) item.posterize = posterize;
+      }
+
+      // Refresh current view
+      showImage(currentIdx);
+    };
+
+    document.getElementById('clearBtn').onclick = () => {
+      queue = [];
+      currentIdx = 0;
+      thumbStrip.innerHTML = '';
+      updateUI();
+    };
+
+    // Convert and download
+    convertAllBtn.onclick = async () => {
+      if (queue.length === 0) return;
+
+      saveCurrentSettings();
+      convertAllBtn.disabled = true;
+      statusEl.className = 'status visible';
+
+      // Dedupe filenames
+      const filenames = new Map();
+      for (const item of queue) {
+        let name = item.filename.trim();
+        if (!name.toLowerCase().endsWith('.bmp')) name += '.bmp';
+
+        const baseName = name.slice(0, -4);
+        let finalName = name;
+        let counter = 2;
+        while (filenames.has(finalName.toLowerCase())) {
+          finalName = `${baseName}_${counter}.bmp`;
+          counter++;
+        }
+        filenames.set(finalName.toLowerCase(), item);
+        item._finalFilename = finalName;
+      }
+
+      for (let i = 0; i < queue.length; i++) {
+        const item = queue[i];
+        statusEl.textContent = `Converting ${i + 1}/${queue.length}...`;
+
+        try {
+          const blob = await processImage(item);
+          downloadBlob(blob, item._finalFilename);
+
+          if (i < queue.length - 1) {
+            await sleep(120);
+          }
+        } catch (err) {
+          statusEl.className = 'status visible error';
+          statusEl.textContent = `Error: ${err.message}`;
+          convertAllBtn.disabled = false;
+          return;
+        }
+      }
+
+      statusEl.textContent = `Done! Downloaded ${queue.length} file(s).`;
+      convertAllBtn.disabled = false;
+    };
 
     function drawFitted(ctx, img, fit) {
       const srcRatio = img.width / img.height;
@@ -412,7 +649,6 @@
       const shades = parseInt(mode);
       const step = 255 / (shades - 1);
 
-      // Convert to grayscale buffer (Float32 for dithering precision)
       const gray = new Float32Array(WIDTH * HEIGHT);
       for (let i = 0; i < gray.length; i++) {
         const idx = i * 4;
@@ -420,7 +656,6 @@
       }
 
       if (dither) {
-        // Floyd-Steinberg dithering
         for (let y = 0; y < HEIGHT; y++) {
           for (let x = 0; x < WIDTH; x++) {
             const i = y * WIDTH + x;
@@ -429,7 +664,6 @@
             gray[i] = newVal;
             const error = oldVal - newVal;
 
-            // Distribute error
             if (x + 1 < WIDTH) gray[i + 1] += error * 7 / 16;
             if (y + 1 < HEIGHT) {
               if (x > 0) gray[i + WIDTH - 1] += error * 3 / 16;
@@ -439,13 +673,11 @@
           }
         }
       } else {
-        // Simple quantize
         for (let i = 0; i < gray.length; i++) {
           gray[i] = Math.round(gray[i] / step) * step;
         }
       }
 
-      // Write back to imageData
       for (let i = 0; i < gray.length; i++) {
         const v = clamp(gray[i]);
         const idx = i * 4;
@@ -456,79 +688,6 @@
     function clamp(v) {
       return Math.max(0, Math.min(255, Math.round(v)));
     }
-
-    // Apply to all controls
-    document.getElementById('applyContrast').oninput = (e) => {
-      document.getElementById('applyContrastValue').textContent = e.target.value;
-    };
-
-    document.getElementById('applyBtn').onclick = () => {
-      const fit = document.getElementById('applyFit').value;
-      const contrast = parseInt(document.getElementById('applyContrast').value);
-      const posterize = document.getElementById('applyPosterize').value;
-
-      for (const item of queue) {
-        if (fit) item.fit = fit;
-        item.contrast = contrast;
-        if (posterize) item.posterize = posterize;
-        renderQueueItem(item);
-        updatePreview(item);
-      }
-    };
-
-    document.getElementById('clearBtn').onclick = () => {
-      queue = [];
-      queueEl.innerHTML = '';
-      updateUI();
-    };
-
-    // Convert and download all
-    convertAllBtn.onclick = async () => {
-      if (queue.length === 0) return;
-
-      convertAllBtn.disabled = true;
-      statusEl.className = 'status visible';
-
-      // Dedupe filenames
-      const filenames = new Map();
-      for (const item of queue) {
-        let name = item.filename.trim();
-        if (!name.toLowerCase().endsWith('.bmp')) name += '.bmp';
-
-        const baseName = name.slice(0, -4);
-        let finalName = name;
-        let counter = 2;
-        while (filenames.has(finalName.toLowerCase())) {
-          finalName = `${baseName}_${counter}.bmp`;
-          counter++;
-        }
-        filenames.set(finalName.toLowerCase(), item);
-        item._finalFilename = finalName;
-      }
-
-      for (let i = 0; i < queue.length; i++) {
-        const item = queue[i];
-        statusEl.textContent = `Converting ${i + 1}/${queue.length}...`;
-
-        try {
-          const blob = await processImage(item);
-          downloadBlob(blob, item._finalFilename);
-
-          // Small delay between downloads
-          if (i < queue.length - 1) {
-            await sleep(120);
-          }
-        } catch (err) {
-          statusEl.className = 'status visible error';
-          statusEl.textContent = `Error processing ${item.file.name}: ${err.message}`;
-          convertAllBtn.disabled = false;
-          return;
-        }
-      }
-
-      statusEl.textContent = `Done! Downloaded ${queue.length} file(s).`;
-      convertAllBtn.disabled = false;
-    };
 
     function processImage(item) {
       return new Promise((resolve) => {
@@ -559,7 +718,6 @@
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // BMP encoder (24-bit, top-down rows via negative height, BGR byte order)
     function createBMP(imageData) {
       const w = WIDTH, h = HEIGHT;
       const rowSize = Math.ceil(w * 3 / 4) * 4;
@@ -570,38 +728,34 @@
       const buffer = new ArrayBuffer(fileSize);
       const view = new DataView(buffer);
 
-      // BMP Header
-      view.setUint8(0, 0x42); // 'B'
-      view.setUint8(1, 0x4D); // 'M'
+      view.setUint8(0, 0x42);
+      view.setUint8(1, 0x4D);
       view.setUint32(2, fileSize, true);
-      view.setUint32(6, 0, true); // reserved
+      view.setUint32(6, 0, true);
       view.setUint32(10, headerSize, true);
 
-      // DIB Header (BITMAPINFOHEADER)
-      view.setUint32(14, 40, true); // header size
+      view.setUint32(14, 40, true);
       view.setInt32(18, w, true);
-      view.setInt32(22, -h, true); // negative = top-down
-      view.setUint16(26, 1, true); // planes
-      view.setUint16(28, 24, true); // bits per pixel
-      view.setUint32(30, 0, true); // compression (none)
+      view.setInt32(22, -h, true);
+      view.setUint16(26, 1, true);
+      view.setUint16(28, 24, true);
+      view.setUint32(30, 0, true);
       view.setUint32(34, pixelDataSize, true);
-      view.setUint32(38, 2835, true); // horizontal resolution (72 DPI)
-      view.setUint32(42, 2835, true); // vertical resolution
-      view.setUint32(46, 0, true); // colors in palette
-      view.setUint32(50, 0, true); // important colors
+      view.setUint32(38, 2835, true);
+      view.setUint32(42, 2835, true);
+      view.setUint32(46, 0, true);
+      view.setUint32(50, 0, true);
 
-      // Pixel data (BGR)
       const data = imageData.data;
       let offset = headerSize;
       for (let y = 0; y < h; y++) {
         const rowStart = offset;
         for (let x = 0; x < w; x++) {
           const i = (y * w + x) * 4;
-          view.setUint8(offset++, data[i + 2]); // B
-          view.setUint8(offset++, data[i + 1]); // G
-          view.setUint8(offset++, data[i]);     // R
+          view.setUint8(offset++, data[i + 2]);
+          view.setUint8(offset++, data[i + 1]);
+          view.setUint8(offset++, data[i]);
         }
-        // Row padding to 4-byte boundary
         const padding = rowSize - (offset - rowStart);
         for (let p = 0; p < padding; p++) {
           view.setUint8(offset++, 0);
