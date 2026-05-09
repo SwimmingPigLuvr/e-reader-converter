@@ -97,7 +97,6 @@
     .header {
       text-align: center;
       margin-bottom: 24px;
-      position: relative;
     }
 
     h1 {
@@ -127,19 +126,10 @@
     }
 
     .theme-toggle {
-      position: absolute;
-      top: 0;
-      right: 0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .theme-toggle-label {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 200;
     }
 
     .toggle-btn {
@@ -779,27 +769,21 @@
        ============================================= */
     .device-wrapper {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       align-items: center;
-      gap: 20px;
+      justify-content: center;
+      gap: 16px;
     }
 
     .device-color-toggle {
       display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .device-color-toggle span {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .color-btn {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       border: 3px solid var(--border);
       cursor: pointer;
@@ -920,34 +904,24 @@
         position: sticky;
         top: 0;
         width: 100%;
-        margin-bottom: 20px;
-        padding: 16px 0;
+        margin-bottom: 0;
+        padding: 8px 0;
         background: var(--bg-primary);
         z-index: 100;
       }
 
       .right-column .device-wrapper {
-        transform: scale(0.7);
+        transform: scale(0.5);
         transform-origin: top center;
-        margin-bottom: -80px;
+        margin-bottom: -180px;
       }
 
       .right-column .device-specs {
         display: none;
       }
 
-      .right-column .device-color-toggle {
-        margin-bottom: 8px;
-      }
-
       .option-group.cols-4 {
         grid-template-columns: repeat(2, 1fr);
-      }
-
-      .theme-toggle {
-        position: static;
-        justify-content: center;
-        margin-top: 16px;
       }
     }
 
@@ -958,24 +932,24 @@
       }
 
       .right-column .device-wrapper {
-        transform: scale(0.6);
-        margin-bottom: -120px;
+        transform: scale(0.45);
+        margin-bottom: -200px;
       }
     }
   </style>
 </head>
 <body>
+  <div class="theme-toggle">
+    <button class="toggle-btn" id="themeToggle" title="Toggle dark mode">
+      <span class="toggle-icon sun">☀</span>
+      <span class="toggle-icon moon">☾</span>
+    </button>
+  </div>
+
   <div class="container">
     <header class="header">
       <h1>E-Reader Converter</h1>
       <p class="info">Converts to 480×800 BMP for Xteink X4</p>
-      <div class="theme-toggle">
-        <span class="theme-toggle-label">Theme</span>
-        <button class="toggle-btn" id="themeToggle" title="Toggle dark mode">
-          <span class="toggle-icon sun">☀</span>
-          <span class="toggle-icon moon">☾</span>
-        </button>
-      </div>
     </header>
 
     <div class="dropzone" id="dropzone">
@@ -1152,18 +1126,17 @@
 
         <div class="right-column">
           <div class="device-wrapper">
-            <div class="device-color-toggle">
-              <span>Device</span>
-              <button class="color-btn black active" id="colorBlack" title="Space Black"></button>
-              <button class="color-btn white" id="colorWhite" title="Pearl White"></button>
-            </div>
             <div class="device-frame black" id="deviceFrame">
               <div class="eink-screen">
                 <canvas class="preview-canvas" id="previewCanvas" width="480" height="800"></canvas>
               </div>
             </div>
-            <div class="device-specs">4.3" E Ink • 480×800 • 220 PPI • Grayscale</div>
+            <div class="device-color-toggle">
+              <button class="color-btn black active" id="colorBlack" title="Space Black"></button>
+              <button class="color-btn white" id="colorWhite" title="Pearl White"></button>
+            </div>
           </div>
+          <div class="device-specs">4.3" E Ink • 480×800 • 220 PPI • Grayscale</div>
         </div>
       </div>
     </div>
