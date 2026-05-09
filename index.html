@@ -119,8 +119,6 @@
     }
 
     .hero-placeholder {
-      width: 120px;
-      height: 160px;
       background: var(--bg-tertiary);
       border: 2px dashed var(--border-dashed);
       border-radius: var(--radius);
@@ -129,12 +127,15 @@
       justify-content: center;
       position: relative;
       overflow: hidden;
+      padding: 8px;
     }
 
     .hero-placeholder-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      max-width: 240px;
+      max-height: 320px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
       border-radius: 2px;
     }
 
@@ -153,7 +154,7 @@
     }
 
     .hero-arrow {
-      font-size: 2rem;
+      font-size: 3rem;
       color: var(--accent);
       display: flex;
       align-items: center;
@@ -168,9 +169,9 @@
 
     .hero-device {
       position: relative;
-      padding: 10px 8px 16px 8px;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      padding: 18px 14px 28px 14px;
+      border-radius: 18px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
     }
 
     .hero-device.black {
@@ -180,10 +181,10 @@
     .hero-device::before {
       content: 'XTEINK';
       position: absolute;
-      bottom: 5px;
+      bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 5px;
+      font-size: 7px;
       font-weight: 700;
       letter-spacing: 2px;
       color: #555;
@@ -191,29 +192,50 @@
     }
 
     .hero-screen {
-      width: 72px;
-      height: 120px;
-      border-radius: 2px;
+      width: 168px;
+      height: 280px;
+      border-radius: 3px;
       overflow: hidden;
       background: #d8d6d0;
     }
 
     .hero-screen canvas {
       display: block;
-      width: 72px;
-      height: 120px;
+      width: 168px;
+      height: 280px;
       filter: grayscale(100%) contrast(0.9);
     }
 
     @media (max-width: 600px) {
       .hero {
         flex-direction: column;
-        gap: 24px;
+        gap: 20px;
         padding: 24px;
+      }
+
+      .hero-placeholder-img {
+        max-width: 180px;
+        max-height: 240px;
       }
 
       .hero-arrow {
         transform: rotate(90deg);
+        font-size: 2rem;
+      }
+
+      .hero-device {
+        padding: 12px 10px 20px 10px;
+        border-radius: 14px;
+      }
+
+      .hero-screen {
+        width: 120px;
+        height: 200px;
+      }
+
+      .hero-screen canvas {
+        width: 120px;
+        height: 200px;
       }
     }
 
