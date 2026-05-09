@@ -226,9 +226,8 @@
       box-shadow: 0 0 20px var(--accent-glow);
     }
 
-    .dropzone.minimized {
-      padding: 16px;
-      margin-bottom: 20px;
+    .dropzone.hidden {
+      display: none;
     }
 
     .dropzone p {
@@ -910,7 +909,14 @@
         flex-direction: column;
       }
 
+      .left-column {
+        order: 2;
+        max-width: 100%;
+        width: 100%;
+      }
+
       .right-column {
+        order: 1;
         position: sticky;
         top: 0;
         width: 100%;
@@ -932,11 +938,6 @@
 
       .right-column .device-color-toggle {
         margin-bottom: 8px;
-      }
-
-      .left-column {
-        max-width: 100%;
-        width: 100%;
       }
 
       .option-group.cols-4 {
@@ -1274,9 +1275,17 @@
     };
     fileInput.onchange = (e) => { handleFiles(e.target.files); fileInput.value = ''; };
 
+    const MAX_IMAGES = 8;
+
     function handleFiles(files) {
       for (const file of files) {
         if (!file.type.startsWith('image/')) continue;
+        if (queue.length >= MAX_IMAGES) {
+          statusEl.className = 'status visible error';
+          statusEl.textContent = `Maximum ${MAX_IMAGES} images allowed`;
+          setTimeout(() => statusEl.classList.remove('visible'), 3000);
+          break;
+        }
         addToQueue(file);
       }
     }
@@ -1328,7 +1337,7 @@
       const hasImages = queue.length > 0;
       const allLoaded = queue.every(item => item.img);
       editor.classList.toggle('visible', hasImages);
-      dropzone.classList.toggle('minimized', hasImages);
+      dropzone.classList.toggle('hidden', hasImages);
       applyPanel.classList.toggle('visible', queue.length >= 2);
       convertAllBtn.disabled = !hasImages || !allLoaded;
       convertAllBtn.textContent = queue.length > 1 ? 'Convert & Download ZIP' : 'Convert & Download';
