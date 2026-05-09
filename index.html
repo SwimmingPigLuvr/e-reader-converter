@@ -1106,9 +1106,9 @@
     <div class="hero" id="heroSection">
       <div class="hero-before">
         <div class="hero-placeholder" id="heroPlaceholder">
-          <span class="hero-placeholder-icon">🖼</span>
+          <img class="hero-placeholder-img" id="heroBeforeImg" src="images/examples/three.jpeg" alt="Original">
         </div>
-        <span class="hero-label">Your Image</span>
+        <span class="hero-label">Original</span>
       </div>
       <div class="hero-arrow">→</div>
       <div class="hero-after">
@@ -1367,31 +1367,26 @@
     const heroCanvas = document.getElementById('heroCanvas');
     const heroCtx = heroCanvas.getContext('2d');
 
-    // Initialize hero canvas with a sample pattern
+    // Hero example images with their conversion settings
+    const heroExamples = [
+      { src: 'images/examples/three.jpeg', fit: 'crop', contrast: 0, posterize: '16d' }
+    ];
+
+    // Initialize hero canvas - called after helper functions are defined
     function initHeroCanvas() {
-      // Create a gradient pattern to simulate a converted image
-      const gradient = heroCtx.createLinearGradient(0, 0, 0, 800);
-      gradient.addColorStop(0, '#e8e4e0');
-      gradient.addColorStop(0.3, '#d0ccc8');
-      gradient.addColorStop(0.5, '#888');
-      gradient.addColorStop(0.7, '#555');
-      gradient.addColorStop(1, '#333');
-      heroCtx.fillStyle = gradient;
-      heroCtx.fillRect(0, 0, 480, 800);
-
-      // Add some "dithered" noise effect
-      const imageData = heroCtx.getImageData(0, 0, 480, 800);
-      const data = imageData.data;
-      for (let i = 0; i < data.length; i += 4) {
-        const noise = (Math.random() - 0.5) * 20;
-        data[i] = Math.max(0, Math.min(255, data[i] + noise));
-        data[i + 1] = Math.max(0, Math.min(255, data[i + 1] + noise));
-        data[i + 2] = Math.max(0, Math.min(255, data[i + 2] + noise));
-      }
-      heroCtx.putImageData(imageData, 0, 0);
+      const example = heroExamples[0];
+      const heroBeforeImg = document.getElementById('heroBeforeImg');
+      const img = new Image();
+      img.onload = () => {
+        // Use same processing as main converter
+        drawFitted(heroCtx, img, example.fit);
+        const imageData = heroCtx.getImageData(0, 0, WIDTH, HEIGHT);
+        applyContrast(imageData, example.contrast);
+        applyPosterize(imageData, example.posterize);
+        heroCtx.putImageData(imageData, 0, 0);
+      };
+      img.src = example.src;
     }
-
-    initHeroCanvas();
 
     const originalImg = document.getElementById('originalImg');
     const previewCanvas = document.getElementById('previewCanvas');
@@ -1822,6 +1817,9 @@
       }
       return new Blob([buffer], { type: 'image/bmp' });
     }
+
+    // Initialize hero after all functions are defined
+    initHeroCanvas();
   </script>
 </body>
 </html>
