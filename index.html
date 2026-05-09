@@ -907,13 +907,31 @@
        ============================================= */
     @media (max-width: 900px) {
       .editor-layout {
-        flex-direction: column-reverse;
+        flex-direction: column;
       }
 
       .right-column {
-        position: static;
+        position: sticky;
+        top: 0;
         width: 100%;
-        margin-bottom: 24px;
+        margin-bottom: 20px;
+        padding: 16px 0;
+        background: var(--bg-primary);
+        z-index: 100;
+      }
+
+      .right-column .device-wrapper {
+        transform: scale(0.7);
+        transform-origin: top center;
+        margin-bottom: -80px;
+      }
+
+      .right-column .device-specs {
+        display: none;
+      }
+
+      .right-column .device-color-toggle {
+        margin-bottom: 8px;
       }
 
       .left-column {
@@ -936,6 +954,11 @@
       .option-group.cols-2,
       .option-group.cols-4 {
         grid-template-columns: 1fr;
+      }
+
+      .right-column .device-wrapper {
+        transform: scale(0.6);
+        margin-bottom: -120px;
       }
     }
   </style>
@@ -1013,6 +1036,20 @@
               <div class="slider-container">
                 <input type="range" class="custom-slider" id="contrastSlider" min="-100" max="100" value="0">
                 <span class="slider-value" id="contrastValue">0</span>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label">Invert (Negative)</label>
+              <div class="option-group cols-2" id="invertGroup">
+                <button class="option-btn compact selected" data-value="off">
+                  <span class="option-icon">◐</span>
+                  <span class="option-label">Normal</span>
+                </button>
+                <button class="option-btn compact" data-value="on">
+                  <span class="option-icon">◑</span>
+                  <span class="option-label">Inverted</span>
+                </button>
               </div>
             </div>
 
@@ -1108,7 +1145,7 @@
           <div class="status" id="status"></div>
 
           <div class="actions">
-            <button class="btn btn-primary" id="convertAllBtn">Convert & Download ZIP</button>
+            <button class="btn btn-primary" id="convertAllBtn">Convert & Download</button>
           </div>
         </div>
 
@@ -1208,6 +1245,7 @@
 
     // Setup option groups
     setupOptionGroup('fitGroup', () => { saveCurrentSettings(); updatePreview(); });
+    setupOptionGroup('invertGroup', () => { saveCurrentSettings(); updatePreview(); });
     setupOptionGroup('shadesGroup', () => { saveCurrentSettings(); updatePreview(); });
     setupOptionGroup('applyFitGroup', null);
 
@@ -1248,7 +1286,7 @@
       const baseName = file.name.replace(/\.[^.]+$/, '');
       const timestamp = formatTimestamp(new Date());
       const item = {
-        id, file, img: null, fit: 'crop', contrast: 0, posterize: 'off',
+        id, file, img: null, fit: 'crop', contrast: 0, invert: 'off', posterize: 'off',
         filename: `${baseName}_480x800_${timestamp}.bmp`
       };
       queue.push(item);
@@ -1293,6 +1331,7 @@
       dropzone.classList.toggle('minimized', hasImages);
       applyPanel.classList.toggle('visible', queue.length >= 2);
       convertAllBtn.disabled = !hasImages || !allLoaded;
+      convertAllBtn.textContent = queue.length > 1 ? 'Convert & Download ZIP' : 'Convert & Download';
       totalCountEl.textContent = queue.length;
       currentIndexEl.textContent = queue.length > 0 ? currentIdx + 1 : 0;
       prevBtn.disabled = currentIdx === 0;
@@ -1324,6 +1363,7 @@
       setOptionGroupValue('fitGroup', item.fit);
       contrastSlider.value = item.contrast;
       contrastValue.textContent = item.contrast;
+      setOptionGroupValue('invertGroup', item.invert);
       setOptionGroupValue('shadesGroup', item.posterize);
       filenameInput.value = item.filename;
       updatePreview();
@@ -1336,6 +1376,7 @@
       if (!item) return;
       item.fit = getOptionGroupValue('fitGroup') || 'crop';
       item.contrast = parseInt(contrastSlider.value);
+      item.invert = getOptionGroupValue('invertGroup') || 'off';
       item.posterize = getOptionGroupValue('shadesGroup') || 'off';
       item.filename = filenameInput.value;
     }
@@ -1344,6 +1385,7 @@
       const item = queue[currentIdx];
       if (!item || !item.img) return;
       const fit = getOptionGroupValue('fitGroup') || 'crop';
+      const invert = getOptionGroupValue('invertGroup') || 'off';
       const posterize = getOptionGroupValue('shadesGroup') || 'off';
       const fullCanvas = document.createElement('canvas');
       fullCanvas.width = WIDTH;
@@ -1352,6 +1394,7 @@
       drawFitted(fullCtx, item.img, fit);
       const imageData = fullCtx.getImageData(0, 0, WIDTH, HEIGHT);
       applyContrast(imageData, parseInt(contrastSlider.value));
+      if (invert === 'on') applyInvert(imageData);
       applyPosterize(imageData, posterize);
       fullCtx.putImageData(imageData, 0, 0);
       previewCtx.drawImage(fullCanvas, 0, 0);
@@ -1394,9 +1437,7 @@
       convertAllBtn.disabled = true;
       statusEl.className = 'status visible';
 
-      const zip = new JSZip();
       const filenames = new Map();
-
       for (const item of queue) {
         let name = item.filename.trim();
         if (!name.toLowerCase().endsWith('.bmp')) name += '.bmp';
@@ -1411,6 +1452,23 @@
         item._finalFilename = finalName;
       }
 
+      // Single file: download directly
+      if (queue.length === 1) {
+        statusEl.textContent = 'Converting...';
+        try {
+          const blob = await processImage(queue[0]);
+          downloadBlob(blob, queue[0]._finalFilename);
+          statusEl.textContent = 'Done! Downloaded image.';
+        } catch (err) {
+          statusEl.className = 'status visible error';
+          statusEl.textContent = `Error: ${err.message}`;
+        }
+        convertAllBtn.disabled = false;
+        return;
+      }
+
+      // Multiple files: create ZIP
+      const zip = new JSZip();
       for (let i = 0; i < queue.length; i++) {
         const item = queue[i];
         statusEl.textContent = `Converting ${i + 1}/${queue.length}...`;
@@ -1430,7 +1488,7 @@
         const zipBlob = await zip.generateAsync({ type: 'blob' });
         const timestamp = formatTimestamp(new Date());
         downloadBlob(zipBlob, `xteink_images_${timestamp}.zip`);
-        statusEl.textContent = `Done! Downloaded ${queue.length} image(s) as ZIP.`;
+        statusEl.textContent = `Done! Downloaded ${queue.length} images as ZIP.`;
       } catch (err) {
         statusEl.className = 'status visible error';
         statusEl.textContent = `Error creating ZIP: ${err.message}`;
@@ -1508,6 +1566,15 @@
 
     function clamp(v) { return Math.max(0, Math.min(255, Math.round(v))); }
 
+    function applyInvert(imageData) {
+      const data = imageData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        data[i] = 255 - data[i];
+        data[i + 1] = 255 - data[i + 1];
+        data[i + 2] = 255 - data[i + 2];
+      }
+    }
+
     function processImage(item) {
       return new Promise((resolve) => {
         const canvas = document.createElement('canvas');
@@ -1517,6 +1584,7 @@
         drawFitted(ctx, item.img, item.fit);
         const imageData = ctx.getImageData(0, 0, WIDTH, HEIGHT);
         applyContrast(imageData, item.contrast);
+        if (item.invert === 'on') applyInvert(imageData);
         applyPosterize(imageData, item.posterize);
         resolve(createBMP(imageData));
       });
