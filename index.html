@@ -518,15 +518,19 @@
        NAVIGATION
        ============================================= */
     .nav-row {
-      display: flex;
+      display: none;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-top: 20px;
       padding: 16px 20px;
       background: var(--bg-panel);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
+    }
+
+    .nav-row.visible {
+      display: flex;
     }
 
     .counter {
@@ -902,18 +906,17 @@
       .right-column {
         order: 1;
         position: sticky;
-        top: 0;
+        top: 8px;
         width: 100%;
-        margin-bottom: 0;
-        padding: 8px 0;
         background: var(--bg-primary);
         z-index: 100;
+        padding-bottom: 12px;
       }
 
       .right-column .device-wrapper {
         transform: scale(0.5);
         transform-origin: top center;
-        margin-bottom: -180px;
+        height: 280px;
       }
 
       .right-column .device-specs {
@@ -933,7 +936,7 @@
 
       .right-column .device-wrapper {
         transform: scale(0.45);
-        margin-bottom: -200px;
+        height: 250px;
       }
     }
   </style>
@@ -961,16 +964,6 @@
     <div class="editor" id="editor">
       <div class="editor-layout">
         <div class="left-column">
-          <div class="nav-row">
-            <div class="counter">
-              Image <strong><span id="currentIndex">1</span></strong> of <strong><span id="totalCount">1</span></strong>
-            </div>
-            <div class="nav-buttons">
-              <button class="btn btn-sm" id="prevBtn">← Prev</button>
-              <button class="btn btn-sm" id="nextBtn">Next →</button>
-            </div>
-          </div>
-
           <div class="panel original-section">
             <div class="panel-header">Original</div>
             <img class="original-img" id="originalImg">
@@ -1122,6 +1115,16 @@
           <div class="actions">
             <button class="btn btn-primary" id="convertAllBtn">Convert & Download</button>
           </div>
+
+          <div class="nav-row" id="navRow">
+            <div class="counter">
+              Image <strong><span id="currentIndex">1</span></strong> of <strong><span id="totalCount">1</span></strong>
+            </div>
+            <div class="nav-buttons">
+              <button class="btn btn-sm" id="prevBtn">← Prev</button>
+              <button class="btn btn-sm" id="nextBtn">Next →</button>
+            </div>
+          </div>
         </div>
 
         <div class="right-column">
@@ -1205,6 +1208,7 @@
     const contrastValue = document.getElementById('contrastValue');
     const filenameInput = document.getElementById('filenameInput');
 
+    const navRow = document.getElementById('navRow');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     const currentIndexEl = document.getElementById('currentIndex');
@@ -1311,6 +1315,7 @@
       const allLoaded = queue.every(item => item.img);
       editor.classList.toggle('visible', hasImages);
       dropzone.classList.toggle('hidden', hasImages);
+      navRow.classList.toggle('visible', queue.length > 1);
       applyPanel.classList.toggle('visible', queue.length >= 2);
       convertAllBtn.disabled = !hasImages || !allLoaded;
       convertAllBtn.textContent = queue.length > 1 ? 'Convert & Download ZIP' : 'Convert & Download';
