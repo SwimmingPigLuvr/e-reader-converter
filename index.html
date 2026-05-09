@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>E-Reader Image Converter</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -605,6 +606,16 @@
       letter-spacing: 0.5px;
     }
 
+    .tip {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 8px;
+      text-transform: none;
+      letter-spacing: normal;
+      font-weight: 400;
+    }
+
     /* =============================================
        THUMBNAIL STRIP
        ============================================= */
@@ -1054,6 +1065,7 @@
             <div class="control-group">
               <label class="control-label">Output Filename</label>
               <input type="text" class="custom-input" id="filenameInput">
+              <p class="tip">(tip from dylan: always name your files)</p>
             </div>
           </div>
 
@@ -1096,7 +1108,7 @@
           <div class="status" id="status"></div>
 
           <div class="actions">
-            <button class="btn btn-primary" id="convertAllBtn">Convert & Download All</button>
+            <button class="btn btn-primary" id="convertAllBtn">Convert & Download ZIP</button>
           </div>
         </div>
 
@@ -1382,7 +1394,9 @@
       convertAllBtn.disabled = true;
       statusEl.className = 'status visible';
 
+      const zip = new JSZip();
       const filenames = new Map();
+
       for (const item of queue) {
         let name = item.filename.trim();
         if (!name.toLowerCase().endsWith('.bmp')) name += '.bmp';
@@ -1402,8 +1416,7 @@
         statusEl.textContent = `Converting ${i + 1}/${queue.length}...`;
         try {
           const blob = await processImage(item);
-          downloadBlob(blob, item._finalFilename);
-          if (i < queue.length - 1) await sleep(120);
+          zip.file(item._finalFilename, blob);
         } catch (err) {
           statusEl.className = 'status visible error';
           statusEl.textContent = `Error: ${err.message}`;
@@ -1411,7 +1424,17 @@
           return;
         }
       }
-      statusEl.textContent = `Done! Downloaded ${queue.length} file(s).`;
+
+      statusEl.textContent = 'Creating ZIP...';
+      try {
+        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        const timestamp = formatTimestamp(new Date());
+        downloadBlob(zipBlob, `xteink_images_${timestamp}.zip`);
+        statusEl.textContent = `Done! Downloaded ${queue.length} image(s) as ZIP.`;
+      } catch (err) {
+        statusEl.className = 'status visible error';
+        statusEl.textContent = `Error creating ZIP: ${err.message}`;
+      }
       convertAllBtn.disabled = false;
     };
 
