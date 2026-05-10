@@ -1126,7 +1126,7 @@
     <div class="hero" id="heroSection">
       <div class="hero-before">
         <div class="hero-placeholder" id="heroPlaceholder">
-          <img class="hero-placeholder-img" id="heroBeforeImg" src="images/examples/three.jpeg" alt="Original">
+          <img class="hero-placeholder-img" id="heroBeforeImg" src="images/examples/two-panthers.JPG" alt="Original">
         </div>
         <span class="hero-label">Original</span>
       </div>
@@ -1405,6 +1405,7 @@
 
     // Hero example images with their conversion settings
     const heroExamples = [
+      { src: 'images/examples/two-panthers.JPG', fit: 'crop', contrast: 0, posterize: '16d' },
       { src: 'images/examples/three.jpeg', fit: 'letterbox-white', contrast: 0, posterize: '2' }
     ];
 
@@ -1412,6 +1413,7 @@
     function initHeroCanvas() {
       const example = heroExamples[0];
       const heroBeforeImg = document.getElementById('heroBeforeImg');
+      heroBeforeImg.src = example.src;
       const img = new Image();
       img.onload = () => {
         // Use same processing as main converter
