@@ -168,6 +168,14 @@
       background: linear-gradient(165deg, #2d2d2d 0%, #1a1a1a 50%, #0d0d0d 100%);
     }
 
+    .hero-device.white {
+      background: linear-gradient(165deg, #f0f0eb 0%, #e5e5e0 50%, #d8d8d3 100%);
+    }
+
+    .hero-device.white::before {
+      color: #aaa;
+    }
+
     .hero-device::before {
       content: 'XTEINK';
       position: absolute;
@@ -1328,14 +1336,30 @@
 
     // Theme Toggle
     const themeToggle = document.getElementById('themeToggle');
+    const heroDevice = document.querySelector('.hero-device');
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
+
+    function updateHeroDeviceColor(theme) {
+      if (!heroDevice) return;
+      // Opposite: light theme = black device, dark theme = white device
+      if (theme === 'light') {
+        heroDevice.classList.remove('white');
+        heroDevice.classList.add('black');
+      } else {
+        heroDevice.classList.remove('black');
+        heroDevice.classList.add('white');
+      }
+    }
+
+    updateHeroDeviceColor(savedTheme);
 
     themeToggle.addEventListener('click', () => {
       const current = document.documentElement.getAttribute('data-theme');
       const next = current === 'light' ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('theme', next);
+      updateHeroDeviceColor(next);
     });
 
     // Option Group Handler
