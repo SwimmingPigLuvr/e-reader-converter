@@ -1,1864 +1,2458 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="light">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>E-Reader Image Converter</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E-Reader Image Converter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
 
-    :root {
-      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+      :root {
+        --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    /* =============================================
+      /* =============================================
        LIGHT MODE (Paper)
        ============================================= */
-    [data-theme="light"] {
-      --font-main: 'Inter', -apple-system, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      --bg-primary: #faf8f5;
-      --bg-secondary: #f5f2ed;
-      --bg-tertiary: #efebe5;
-      --bg-hover: #e8e4dd;
-      --bg-panel: #fffdf9;
-      --text-primary: #2d2a26;
-      --text-secondary: #5c5752;
-      --text-muted: #8c8580;
-      --accent: #e85d04;
-      --accent-hover: #d45403;
-      --accent-glow: rgba(232, 93, 4, 0.2);
-      --border: #d4cfc7;
-      --border-dashed: #c4bfb7;
-      --radius: 4px;
-      --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-      --line-color: #e8e4dd;
-    }
+      [data-theme="light"] {
+        --font-main: "Inter", -apple-system, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+        --bg-primary: #faf8f5;
+        --bg-secondary: #f5f2ed;
+        --bg-tertiary: #efebe5;
+        --bg-hover: #e8e4dd;
+        --bg-panel: #fffdf9;
+        --text-primary: #2d2a26;
+        --text-secondary: #5c5752;
+        --text-muted: #8c8580;
+        --accent: #e85d04;
+        --accent-hover: #d45403;
+        --accent-glow: rgba(232, 93, 4, 0.2);
+        --border: #d4cfc7;
+        --border-dashed: #c4bfb7;
+        --radius: 4px;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        --line-color: #e8e4dd;
+      }
 
-    [data-theme="light"] body {
-      background:
-        repeating-linear-gradient(0deg, transparent, transparent 27px, var(--line-color) 27px, var(--line-color) 28px),
-        var(--bg-primary);
-    }
+      [data-theme="light"] body {
+        background:
+          repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 27px,
+            var(--line-color) 27px,
+            var(--line-color) 28px
+          ),
+          var(--bg-primary);
+      }
 
-    /* =============================================
+      /* =============================================
        DARK MODE (Paper Dark)
        ============================================= */
-    [data-theme="dark"] {
-      --font-main: 'Inter', -apple-system, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      --bg-primary: #1a1816;
-      --bg-secondary: #222019;
-      --bg-tertiary: #2a2720;
-      --bg-hover: #333027;
-      --bg-panel: #1e1c18;
-      --text-primary: #e8e4dd;
-      --text-secondary: #a8a49d;
-      --text-muted: #6c6862;
-      --accent: #f97316;
-      --accent-hover: #fb923c;
-      --accent-glow: rgba(249, 115, 22, 0.25);
-      --border: #3a3730;
-      --border-dashed: #4a4740;
-      --radius: 4px;
-      --shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-      --line-color: #2a2720;
-    }
+      [data-theme="dark"] {
+        --font-main: "Inter", -apple-system, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+        --bg-primary: #1a1816;
+        --bg-secondary: #222019;
+        --bg-tertiary: #2a2720;
+        --bg-hover: #333027;
+        --bg-panel: #1e1c18;
+        --text-primary: #e8e4dd;
+        --text-secondary: #a8a49d;
+        --text-muted: #6c6862;
+        --accent: #f97316;
+        --accent-hover: #fb923c;
+        --accent-glow: rgba(249, 115, 22, 0.25);
+        --border: #3a3730;
+        --border-dashed: #4a4740;
+        --radius: 4px;
+        --shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+        --line-color: #2a2720;
+      }
 
-    [data-theme="dark"] body {
-      background:
-        repeating-linear-gradient(0deg, transparent, transparent 27px, var(--line-color) 27px, var(--line-color) 28px),
-        var(--bg-primary);
-    }
+      [data-theme="dark"] body {
+        background:
+          repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 27px,
+            var(--line-color) 27px,
+            var(--line-color) 28px
+          ),
+          var(--bg-primary);
+      }
 
-    /* =============================================
+      /* =============================================
        BASE STYLES
        ============================================= */
-    body {
-      font-family: var(--font-main);
-      color: var(--text-primary);
-      min-height: 100vh;
-      padding: 20px;
-      transition: background var(--transition), color var(--transition);
-    }
+      body {
+        font-family: var(--font-main);
+        color: var(--text-primary);
+        min-height: 100vh;
+        padding: 20px;
+        transition:
+          background var(--transition),
+          color var(--transition);
+      }
 
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
 
-    /* =============================================
+      /* =============================================
        HERO SECTION
        ============================================= */
-    .hero {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 40px;
-      margin-bottom: 32px;
-      padding: 32px 0;
-    }
-
-    .hero.hidden {
-      display: none;
-    }
-
-    .hero-before {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .hero-placeholder {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .hero-placeholder-img {
-      max-width: 240px;
-      max-height: 320px;
-      width: auto;
-      height: auto;
-      object-fit: contain;
-      border-radius: 2px;
-    }
-
-    .hero-placeholder-icon {
-      font-size: 2.5rem;
-      color: var(--text-muted);
-      opacity: 0.5;
-    }
-
-    .hero-label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .hero-arrow {
-      font-size: 3rem;
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-    }
-
-    .hero-after {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .hero-device {
-      position: relative;
-      padding: 18px 14px 28px 14px;
-      border-radius: 18px;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
-    }
-
-    .hero-device.black {
-      background: linear-gradient(165deg, #2d2d2d 0%, #1a1a1a 50%, #0d0d0d 100%);
-    }
-
-    .hero-device.white {
-      background: linear-gradient(165deg, #d0d0cb 0%, #c5c5c0 50%, #bbbbb6 100%);
-    }
-
-    .hero-device.white::before {
-      color: #999;
-    }
-
-    .hero-device::before {
-      content: 'XTEINK';
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 7px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      color: #555;
-      opacity: 0.4;
-    }
-
-    .hero-screen {
-      width: 168px;
-      height: 280px;
-      border-radius: 3px;
-      overflow: hidden;
-      background: #c8c6c2;
-    }
-
-    .hero-screen canvas {
-      display: block;
-      width: 168px;
-      height: 280px;
-      filter: grayscale(100%) contrast(0.9) brightness(0.78);
-    }
-
-    @media (max-width: 600px) {
       .hero {
-        flex-direction: column;
-        gap: 20px;
-        padding: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        margin-bottom: 32px;
+        padding: 32px 0;
       }
 
-      .hero-placeholder-img {
-        max-width: 180px;
-        max-height: 240px;
-      }
-
-      .hero-arrow {
-        transform: rotate(90deg);
-        font-size: 2rem;
-      }
-
-      .hero-device {
-        padding: 12px 10px 20px 10px;
-        border-radius: 14px;
-      }
-
-      .hero-screen {
-        width: 120px;
-        height: 200px;
-      }
-
-      .hero-screen canvas {
-        width: 120px;
-        height: 200px;
-      }
-    }
-
-    /* =============================================
-       HEADER & THEME TOGGLE
-       ============================================= */
-    .header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--text-primary);
-      position: relative;
-      display: inline-block;
-    }
-
-    h1::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: -4px;
-      height: 3px;
-      background: var(--accent);
-      border-radius: 2px;
-    }
-
-    .info {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      margin-bottom: 16px;
-    }
-
-    .theme-toggle {
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      z-index: 200;
-    }
-
-    .toggle-btn {
-      width: 56px;
-      height: 30px;
-      background: var(--bg-tertiary);
-      border: 2px solid var(--border);
-      border-radius: 15px;
-      cursor: pointer;
-      position: relative;
-      transition: all var(--transition);
-    }
-
-    .toggle-btn:hover {
-      border-color: var(--accent);
-    }
-
-    .toggle-btn::before {
-      content: '';
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 20px;
-      height: 20px;
-      background: var(--accent);
-      border-radius: 50%;
-      transition: all var(--transition);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    [data-theme="dark"] .toggle-btn::before {
-      left: 29px;
-    }
-
-    .toggle-icon {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 14px;
-      transition: opacity var(--transition);
-    }
-
-    .toggle-icon.sun {
-      left: 7px;
-      opacity: 1;
-    }
-
-    .toggle-icon.moon {
-      right: 7px;
-      opacity: 0.4;
-    }
-
-    [data-theme="dark"] .toggle-icon.sun {
-      opacity: 0.4;
-    }
-
-    [data-theme="dark"] .toggle-icon.moon {
-      opacity: 1;
-    }
-
-    /* =============================================
-       DROPZONE
-       ============================================= */
-    .dropzone {
-      border: 2px dashed var(--border-dashed);
-      border-radius: var(--radius);
-      padding: 48px 24px;
-      text-align: center;
-      cursor: pointer;
-      margin: 0 auto 24px auto;
-      max-width: 500px;
-      transition: all var(--transition);
-      background: var(--bg-panel);
-    }
-
-    .dropzone:hover {
-      border-color: var(--accent);
-      background: var(--bg-secondary);
-    }
-
-    .dropzone.dragover {
-      border-color: var(--accent);
-      border-style: solid;
-      background: var(--bg-hover);
-      box-shadow: 0 0 20px var(--accent-glow);
-    }
-
-    .dropzone.hidden {
-      display: none;
-    }
-
-    .dropzone p {
-      color: var(--text-secondary);
-      font-size: 1rem;
-    }
-
-    .dropzone-icon {
-      font-size: 3rem;
-      margin-bottom: 12px;
-      opacity: 0.4;
-      color: var(--text-muted);
-    }
-
-    input[type="file"] { display: none; }
-
-    /* =============================================
-       OPTION BUTTON GROUPS
-       ============================================= */
-    .option-group {
-      display: grid;
-      gap: 10px;
-    }
-
-    .option-group.cols-2 {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .option-group.cols-4 {
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    .option-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      padding: 14px 12px;
-      background: var(--bg-panel);
-      border: 2px dashed var(--border-dashed);
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: all var(--transition);
-      text-align: center;
-    }
-
-    .option-btn:hover {
-      background: var(--bg-hover);
-      border-color: var(--text-muted);
-    }
-
-    .option-btn.selected {
-      border-style: solid;
-      border-color: var(--accent);
-      background: var(--accent-glow);
-    }
-
-    .option-icon {
-      font-size: 1.5rem;
-      line-height: 1;
-    }
-
-    .option-label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .option-desc {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      line-height: 1.3;
-    }
-
-    .option-btn.compact {
-      padding: 10px 8px;
-    }
-
-    .option-btn.compact .option-icon {
-      font-size: 1.2rem;
-    }
-
-    .option-btn.compact .option-label {
-      font-size: 0.75rem;
-    }
-
-    .option-btn.compact .option-desc {
-      font-size: 0.65rem;
-    }
-
-    /* =============================================
-       BUTTONS
-       ============================================= */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 20px;
-      background: var(--bg-panel);
-      color: var(--text-primary);
-      border: 2px solid var(--border);
-      border-radius: var(--radius);
-      font-family: var(--font-main);
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all var(--transition);
-    }
-
-    .btn:hover {
-      background: var(--bg-hover);
-      border-color: var(--accent);
-    }
-
-    .btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      border: none;
-      color: #fff;
-      font-weight: 600;
-      box-shadow: 0 4px 12px var(--accent-glow);
-    }
-
-    .btn-primary:hover {
-      background: var(--accent-hover);
-    }
-
-    .btn-danger {
-      background: #dc2626;
-      border-color: #dc2626;
-      color: #fff;
-    }
-
-    .btn-sm {
-      padding: 8px 14px;
-      font-size: 0.8rem;
-    }
-
-    /* =============================================
-       SLIDER
-       ============================================= */
-    .slider-container {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .custom-slider {
-      -webkit-appearance: none;
-      appearance: none;
-      flex: 1;
-      height: 8px;
-      background: var(--bg-tertiary);
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .custom-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 24px;
-      height: 24px;
-      background: var(--accent);
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 2px 8px var(--accent-glow);
-      transition: transform var(--transition);
-    }
-
-    .custom-slider::-webkit-slider-thumb:hover {
-      transform: scale(1.15);
-    }
-
-    .custom-slider::-moz-range-thumb {
-      width: 24px;
-      height: 24px;
-      background: var(--accent);
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-    }
-
-    .slider-value {
-      min-width: 52px;
-      padding: 8px 12px;
-      background: var(--bg-tertiary);
-      border-radius: var(--radius);
-      text-align: center;
-      font-family: var(--font-mono);
-      font-size: 0.9rem;
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    /* =============================================
-       TEXT INPUT
-       ============================================= */
-    .custom-input {
-      width: 100%;
-      padding: 14px 16px;
-      background: var(--bg-panel);
-      border: 2px dashed var(--border-dashed);
-      border-radius: var(--radius);
-      color: var(--text-primary);
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      transition: all var(--transition);
-    }
-
-    .custom-input:hover {
-      border-color: var(--text-muted);
-    }
-
-    .custom-input:focus {
-      outline: none;
-      border-style: solid;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
-    }
-
-    /* =============================================
-       PANELS
-       ============================================= */
-    .panel {
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      margin-bottom: 20px;
-      box-shadow: var(--shadow);
-      position: relative;
-    }
-
-    .panel::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 3px;
-      background: var(--accent);
-      border-radius: 3px 0 0 3px;
-    }
-
-    .panel-header {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .panel-header::before {
-      content: '';
-      width: 4px;
-      height: 16px;
-      background: var(--accent);
-      border-radius: 2px;
-    }
-
-    /* =============================================
-       LAYOUT
-       ============================================= */
-    .editor { display: none; }
-    .editor.visible { display: block; }
-
-    .editor-layout {
-      display: flex;
-      gap: 40px;
-      align-items: flex-start;
-    }
-
-    .left-column {
-      flex: 1;
-      min-width: 0;
-      max-width: 50%;
-    }
-
-    .right-column {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      position: sticky;
-      top: 20px;
-    }
-
-    /* =============================================
-       NAVIGATION
-       ============================================= */
-    .nav-row {
-      display: none;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 20px;
-      padding: 16px 20px;
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-
-    .nav-row.visible {
-      display: flex;
-    }
-
-    .counter {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-    }
-
-    .counter strong {
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .nav-buttons {
-      display: flex;
-      gap: 8px;
-    }
-
-    /* =============================================
-       ORIGINAL IMAGE
-       ============================================= */
-    .original-section {
-      margin-bottom: 20px;
-    }
-
-    .original-img {
-      width: 100%;
-      max-width: 200px;
-      height: auto;
-      aspect-ratio: 480 / 800;
-      object-fit: contain;
-      border-radius: var(--radius);
-      background: var(--bg-tertiary);
-      border: 1px solid var(--border);
-    }
-
-    .file-info {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin-top: 12px;
-      font-family: var(--font-mono);
-    }
-
-    .file-info strong {
-      color: var(--text-primary);
-      font-weight: 500;
-    }
-
-    /* =============================================
-       CONTROL GROUPS
-       ============================================= */
-    .control-group {
-      margin-bottom: 24px;
-    }
-
-    .control-group:last-child {
-      margin-bottom: 0;
-    }
-
-    .control-label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .tip {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-style: italic;
-      margin-top: 8px;
-      text-transform: none;
-      letter-spacing: normal;
-      font-weight: 400;
-    }
-
-    /* =============================================
-       THUMBNAIL STRIP
-       ============================================= */
-    .thumb-strip {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding: 16px;
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      margin-bottom: 20px;
-      box-shadow: var(--shadow);
-    }
-
-    .thumb-strip::-webkit-scrollbar {
-      height: 6px;
-    }
-
-    .thumb-strip::-webkit-scrollbar-track {
-      background: var(--bg-tertiary);
-      border-radius: 3px;
-    }
-
-    .thumb-strip::-webkit-scrollbar-thumb {
-      background: var(--text-muted);
-      border-radius: 3px;
-    }
-
-    .thumb-item {
-      flex-shrink: 0;
-      width: 42px;
-      height: 70px;
-      border-radius: 4px;
-      cursor: pointer;
-      border: 2px solid transparent;
-      overflow: hidden;
-      position: relative;
-      transition: all var(--transition);
-    }
-
-    .thumb-item:hover {
-      transform: scale(1.05);
-    }
-
-    .thumb-item.active {
-      border-color: var(--accent);
-      box-shadow: 0 0 12px var(--accent-glow);
-    }
-
-    .thumb-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .thumb-remove {
-      position: absolute;
-      top: 3px;
-      right: 3px;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: rgba(220, 38, 38, 0.9);
-      border: none;
-      color: #fff;
-      cursor: pointer;
-      font-size: 10px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .thumb-item:hover .thumb-remove {
-      display: flex;
-    }
-
-    /* =============================================
-       APPLY PANEL
-       ============================================= */
-    .apply-panel {
-      display: none;
-    }
-
-    .apply-panel.visible {
-      display: block;
-    }
-
-    .apply-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: flex-end;
-    }
-
-    .apply-row .control-group {
-      flex: 1;
-      min-width: 100px;
-      margin-bottom: 0;
-    }
-
-    .apply-row .btn-group {
-      display: flex;
-      gap: 8px;
-    }
-
-    .apply-row .option-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .apply-row .option-btn {
-      padding: 8px 12px;
-      flex: none;
-    }
-
-    .apply-row .option-btn .option-icon,
-    .apply-row .option-btn .option-desc {
-      display: none;
-    }
-
-    .apply-row .option-btn .option-label {
-      font-size: 0.75rem;
-    }
-
-    /* =============================================
-       STATUS
-       ============================================= */
-    .status {
-      text-align: center;
-      padding: 16px;
-      background: var(--bg-panel);
-      border: 2px solid var(--accent);
-      border-radius: var(--radius);
-      color: var(--accent);
-      margin-bottom: 20px;
-      display: none;
-      font-weight: 500;
-    }
-
-    .status.visible {
-      display: block;
-    }
-
-    .status.error {
-      border-color: #dc2626;
-      color: #dc2626;
-    }
-
-    /* =============================================
-       ACTIONS
-       ============================================= */
-    .actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    /* =============================================
-       DEVICE MOCKUP
-       ============================================= */
-    .device-wrapper {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-    }
-
-    .device-color-toggle {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .color-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 3px solid var(--border);
-      cursor: pointer;
-      transition: all var(--transition);
-    }
-
-    .color-btn:hover {
-      transform: scale(1.1);
-    }
-
-    .color-btn.active {
-      border-color: var(--accent);
-      box-shadow: 0 0 12px var(--accent-glow);
-    }
-
-    .color-btn.black {
-      background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-    }
-
-    .color-btn.white {
-      background: linear-gradient(145deg, #d0d0cb, #c0c0bb);
-    }
-
-    .device-frame {
-      position: relative;
-      padding: 28px 18px 44px 18px;
-      border-radius: 24px;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
-      transition: all var(--transition);
-    }
-
-    .device-frame.black {
-      background: linear-gradient(165deg, #2d2d2d 0%, #1a1a1a 50%, #0d0d0d 100%);
-    }
-
-    .device-frame.white {
-      background: linear-gradient(165deg, #d0d0cb 0%, #c5c5c0 50%, #bbbbb6 100%);
-    }
-
-    .device-frame::before {
-      content: 'XTEINK';
-      position: absolute;
-      bottom: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 3px;
-      opacity: 0.4;
-    }
-
-    .device-frame.black::before { color: #555; }
-    .device-frame.white::before { color: #aaa; }
-
-    .device-frame::after {
-      content: '';
-      position: absolute;
-      top: 80px;
-      right: -4px;
-      width: 4px;
-      height: 44px;
-      border-radius: 0 3px 3px 0;
-    }
-
-    .device-frame.black::after { background: linear-gradient(180deg, #3a3a3a, #2a2a2a); }
-    .device-frame.white::after { background: linear-gradient(180deg, #d0d0d0, #bbb); }
-
-    .eink-screen {
-      position: relative;
-      width: 288px;
-      height: 480px;
-      border-radius: 4px;
-      overflow: hidden;
-      background: #c8c6c2;
-      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.08);
-    }
-
-    .eink-screen::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      opacity: 0.04;
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    .preview-canvas {
-      display: block;
-      width: 288px;
-      height: 480px;
-      filter: grayscale(100%) contrast(0.9) brightness(0.78);
-    }
-
-    .device-specs {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-align: center;
-      font-family: var(--font-mono);
-    }
-
-    /* =============================================
-       RESPONSIVE
-       ============================================= */
-    @media (max-width: 900px) {
-      .editor-layout {
-        flex-direction: column;
-      }
-
-      .left-column {
-        order: 2;
-        max-width: 100%;
-        width: 100%;
-      }
-
-      .right-column {
-        order: 1;
-        position: static;
-        width: 100%;
-        margin-bottom: 16px;
-      }
-
-      .right-column .device-frame {
-        padding: 14px 10px 22px 10px;
-        border-radius: 16px;
-      }
-
-      .right-column .eink-screen {
-        width: 144px;
-        height: 240px;
-      }
-
-      .right-column .preview-canvas {
-        width: 144px;
-        height: 240px;
-      }
-
-      .right-column .device-frame::before {
-        font-size: 7px;
-        bottom: 8px;
-      }
-
-      .right-column .device-frame::after {
-        top: 40px;
-        height: 22px;
-        width: 3px;
-      }
-
-      .right-column .color-btn {
-        width: 24px;
-        height: 24px;
-      }
-
-      .right-column .device-specs {
+      .hero.hidden {
         display: none;
       }
 
+      .hero-before {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .hero-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .hero-placeholder-img {
+        max-width: 288px;
+        max-height: 384px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        border-radius: 2px;
+      }
+
+      .hero-placeholder-icon {
+        font-size: 2.5rem;
+        color: var(--text-muted);
+        opacity: 0.5;
+      }
+
+      .hero-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .hero-arrow {
+        font-size: 3rem;
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+      }
+
+      .hero-after {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .hero-device {
+        position: relative;
+        padding: 22px 16px 34px 16px;
+        border-radius: 14px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+      }
+
+      .hero-device.black {
+        background: linear-gradient(
+          165deg,
+          #2d2d2d 0%,
+          #1a1a1a 50%,
+          #0d0d0d 100%
+        );
+      }
+
+      .hero-device.white {
+        background: #c4bfa6;
+      }
+
+      .hero-screen {
+        width: 200px;
+        height: 336px;
+        border-radius: 3px;
+        overflow: hidden;
+        background: #c4bfa6;
+      }
+
+      .hero-screen canvas {
+        display: block;
+        width: 200px;
+        height: 336px;
+        filter: grayscale(100%) contrast(0.85) brightness(0.68) sepia(0.15);
+      }
+
+      @media (max-width: 600px) {
+        .hero {
+          flex-direction: row;
+          gap: 12px;
+          padding: 16px 8px;
+          justify-content: center;
+        }
+
+        .hero-placeholder-img {
+          max-width: 130px;
+          max-height: 216px;
+        }
+
+        .hero-arrow {
+          font-size: 1.5rem;
+        }
+
+        .hero-device {
+          padding: 10px 8px 16px 8px;
+          border-radius: 10px;
+        }
+
+        .hero-screen {
+          width: 104px;
+          height: 172px;
+        }
+
+        .hero-screen canvas {
+          width: 104px;
+          height: 172px;
+        }
+
+        .hero-label {
+          font-size: 0.65rem;
+        }
+
+        .hero-before,
+        .hero-after {
+          gap: 8px;
+        }
+      }
+
+      /* =============================================
+       HEADER & THEME TOGGLE
+       ============================================= */
+      .header {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+
+      h1 {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-primary);
+        position: relative;
+        display: inline-block;
+      }
+
+      h1::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -4px;
+        height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+      }
+
+      .info {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin-bottom: 16px;
+      }
+
+      .theme-toggle {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 200;
+      }
+
+      .toggle-btn {
+        width: 56px;
+        height: 30px;
+        background: var(--bg-tertiary);
+        border: 2px solid var(--border);
+        border-radius: 15px;
+        cursor: pointer;
+        position: relative;
+        transition: all var(--transition);
+      }
+
+      .toggle-btn:hover {
+        border-color: var(--accent);
+      }
+
+      .toggle-btn::before {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 20px;
+        height: 20px;
+        background: var(--accent);
+        border-radius: 50%;
+        transition: all var(--transition);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      [data-theme="dark"] .toggle-btn::before {
+        left: 29px;
+      }
+
+      .toggle-icon {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 14px;
+        transition: opacity var(--transition);
+      }
+
+      .toggle-icon.sun {
+        left: 7px;
+        opacity: 1;
+      }
+
+      .toggle-icon.moon {
+        right: 7px;
+        opacity: 0.4;
+      }
+
+      [data-theme="dark"] .toggle-icon.sun {
+        opacity: 0.4;
+      }
+
+      [data-theme="dark"] .toggle-icon.moon {
+        opacity: 1;
+      }
+
+      /* =============================================
+       DROPZONE
+       ============================================= */
+      .dropzone {
+        border: 2px dashed var(--border-dashed);
+        border-radius: var(--radius);
+        padding: 48px 24px;
+        text-align: center;
+        cursor: pointer;
+        margin: 0 auto 24px auto;
+        max-width: 500px;
+        transition: all var(--transition);
+        background: var(--bg-panel);
+      }
+
+      .dropzone:hover {
+        border-color: var(--accent);
+        background: var(--bg-secondary);
+      }
+
+      .dropzone.dragover {
+        border-color: var(--accent);
+        border-style: solid;
+        background: var(--bg-hover);
+        box-shadow: 0 0 20px var(--accent-glow);
+      }
+
+      .dropzone.hidden {
+        display: none;
+      }
+
+      .dropzone p {
+        color: var(--text-secondary);
+        font-size: 1rem;
+      }
+
+      .dropzone-icon {
+        font-size: 3rem;
+        margin-bottom: 12px;
+        opacity: 0.4;
+        color: var(--text-muted);
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+
+      /* =============================================
+       OPTION BUTTON GROUPS
+       ============================================= */
+      .option-group {
+        display: grid;
+        gap: 10px;
+      }
+
+      .option-group.cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .option-group.cols-4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .option-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 14px 12px;
+        background: var(--bg-panel);
+        border: 2px dashed var(--border-dashed);
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: all var(--transition);
+        text-align: center;
+      }
+
+      .option-btn:hover {
+        background: var(--bg-hover);
+        border-color: var(--text-muted);
+      }
+
+      .option-btn.selected {
+        border-style: solid;
+        border-color: var(--accent);
+        background: var(--accent-glow);
+      }
+
+      .option-icon {
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+
+      .option-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .option-desc {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        line-height: 1.3;
+      }
+
+      .option-btn.compact {
+        padding: 10px 8px;
+      }
+
+      .option-btn.compact .option-icon {
+        font-size: 1.2rem;
+      }
+
+      .option-btn.compact .option-label {
+        font-size: 0.75rem;
+      }
+
+      .option-btn.compact .option-desc {
+        font-size: 0.65rem;
+      }
+
+      /* =============================================
+       BUTTONS
+       ============================================= */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 20px;
+        background: var(--bg-panel);
+        color: var(--text-primary);
+        border: 2px solid var(--border);
+        border-radius: var(--radius);
+        font-family: var(--font-main);
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition);
+      }
+
+      .btn:hover {
+        background: var(--bg-hover);
+        border-color: var(--accent);
+      }
+
+      .btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 4px 12px var(--accent-glow);
+      }
+
+      .btn-primary:hover {
+        background: var(--accent-hover);
+      }
+
+      .btn-danger {
+        background: #dc2626;
+        border-color: #dc2626;
+        color: #fff;
+      }
+
+      .btn-sm {
+        padding: 8px 14px;
+        font-size: 0.8rem;
+      }
+
+      /* =============================================
+       SLIDER
+       ============================================= */
+      .slider-container {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .custom-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        flex: 1;
+        height: 8px;
+        background: var(--bg-tertiary);
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .custom-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 24px;
+        height: 24px;
+        background: var(--accent);
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 8px var(--accent-glow);
+        transition: transform var(--transition);
+      }
+
+      .custom-slider::-webkit-slider-thumb:hover {
+        transform: scale(1.15);
+      }
+
+      .custom-slider::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        background: var(--accent);
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      .slider-value {
+        min-width: 52px;
+        padding: 8px 12px;
+        background: var(--bg-tertiary);
+        border-radius: var(--radius);
+        text-align: center;
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      /* =============================================
+       TEXT INPUT
+       ============================================= */
+      .custom-input {
+        width: 100%;
+        padding: 14px 16px;
+        background: var(--bg-panel);
+        border: 2px dashed var(--border-dashed);
+        border-radius: var(--radius);
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        transition: all var(--transition);
+      }
+
+      .custom-input:hover {
+        border-color: var(--text-muted);
+      }
+
+      .custom-input:focus {
+        outline: none;
+        border-style: solid;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+      }
+
+      /* =============================================
+       PANELS
+       ============================================= */
+      .panel {
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: var(--shadow);
+        position: relative;
+      }
+
+      .panel::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--accent);
+        border-radius: 3px 0 0 3px;
+      }
+
+      .panel-header {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .panel-header::before {
+        content: "";
+        width: 4px;
+        height: 16px;
+        background: var(--accent);
+        border-radius: 2px;
+      }
+
+      /* =============================================
+       LAYOUT
+       ============================================= */
+      .editor {
+        display: none;
+      }
+      .editor.visible {
+        display: block;
+      }
+
+      .editor-layout {
+        display: flex;
+        gap: 40px;
+        align-items: flex-start;
+      }
+
+      .left-column {
+        flex: 1;
+        min-width: 0;
+        max-width: 50%;
+        order: 2;
+      }
+
+      .right-column {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: sticky;
+        top: 20px;
+        order: 1;
+      }
+
+      /* =============================================
+       NAVIGATION
+       ============================================= */
+      .nav-row {
+        display: none;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding: 16px 20px;
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+
+      .nav-row.visible {
+        display: flex;
+      }
+
+      .counter {
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+      }
+
+      .counter strong {
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      .nav-buttons {
+        display: flex;
+        gap: 8px;
+      }
+
+      /* =============================================
+       ORIGINAL IMAGE
+       ============================================= */
       .original-section {
         display: none;
       }
 
-      .option-group.cols-4 {
-        grid-template-columns: repeat(2, 1fr);
+      .original-img {
+        width: 100%;
+        max-width: 200px;
+        height: auto;
+        aspect-ratio: 480 / 800;
+        object-fit: contain;
+        border-radius: var(--radius);
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border);
       }
-    }
 
-    @media (max-width: 500px) {
-      .option-group.cols-2,
-      .option-group.cols-4 {
-        grid-template-columns: 1fr;
+      .file-info {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-top: 12px;
+        font-family: var(--font-mono);
       }
-    }
-  </style>
-</head>
-<body>
-  <div class="theme-toggle">
-    <button class="toggle-btn" id="themeToggle" title="Toggle dark mode">
-      <span class="toggle-icon sun">☀</span>
-      <span class="toggle-icon moon">☾</span>
-    </button>
-  </div>
 
-  <div class="container">
-    <header class="header">
-      <h1>E-Reader Converter</h1>
-      <p class="info">Converts to 480×800 BMP for Xteink X4</p>
-    </header>
+      .file-info strong {
+        color: var(--text-primary);
+        font-weight: 500;
+      }
 
-    <div class="hero" id="heroSection">
-      <div class="hero-before">
-        <div class="hero-placeholder" id="heroPlaceholder">
-          <img class="hero-placeholder-img" id="heroBeforeImg" src="images/examples/watch.JPG" alt="Original">
-        </div>
-        <span class="hero-label">Original</span>
-      </div>
-      <div class="hero-arrow">→</div>
-      <div class="hero-after">
-        <div class="hero-device black">
-          <div class="hero-screen">
-            <canvas id="heroCanvas" width="480" height="800"></canvas>
-          </div>
-        </div>
-        <span class="hero-label">E-Ink Ready</span>
-      </div>
+      /* =============================================
+       CONTROL GROUPS
+       ============================================= */
+      .control-group {
+        margin-bottom: 24px;
+      }
+
+      .control-group:last-child {
+        margin-bottom: 0;
+      }
+
+      .control-label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .tip {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-style: italic;
+        margin-top: 8px;
+        text-transform: none;
+        letter-spacing: normal;
+        font-weight: 400;
+      }
+
+      /* =============================================
+       THUMBNAIL STRIP
+       ============================================= */
+      .thumb-strip {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding: 16px;
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 20px;
+        box-shadow: var(--shadow);
+      }
+
+      .thumb-strip::-webkit-scrollbar {
+        height: 6px;
+      }
+
+      .thumb-strip::-webkit-scrollbar-track {
+        background: var(--bg-tertiary);
+        border-radius: 3px;
+      }
+
+      .thumb-strip::-webkit-scrollbar-thumb {
+        background: var(--text-muted);
+        border-radius: 3px;
+      }
+
+      .thumb-item {
+        flex-shrink: 0;
+        width: 42px;
+        height: 70px;
+        border-radius: 4px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        overflow: hidden;
+        position: relative;
+        transition: all var(--transition);
+      }
+
+      .thumb-item:hover {
+        transform: scale(1.05);
+      }
+
+      .thumb-item.active {
+        border-color: var(--accent);
+        box-shadow: 0 0 12px var(--accent-glow);
+      }
+
+      .thumb-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .thumb-remove {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: rgba(220, 38, 38, 0.9);
+        border: none;
+        color: #fff;
+        cursor: pointer;
+        font-size: 10px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .thumb-item:hover .thumb-remove {
+        display: flex;
+      }
+
+      /* =============================================
+       APPLY PANEL
+       ============================================= */
+      .apply-panel {
+        display: none;
+      }
+
+      .apply-panel.visible {
+        display: block;
+      }
+
+      .apply-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: flex-end;
+      }
+
+      .apply-row .control-group {
+        flex: 1;
+        min-width: 100px;
+        margin-bottom: 0;
+      }
+
+      .apply-row .btn-group {
+        display: flex;
+        gap: 8px;
+      }
+
+      .apply-row .option-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .apply-row .option-btn {
+        padding: 8px 12px;
+        flex: none;
+      }
+
+      .apply-row .option-btn .option-icon,
+      .apply-row .option-btn .option-desc {
+        display: none;
+      }
+
+      .apply-row .option-btn .option-label {
+        font-size: 0.75rem;
+      }
+
+      /* =============================================
+       STATUS
+       ============================================= */
+      .status {
+        text-align: center;
+        padding: 16px;
+        background: var(--bg-panel);
+        border: 2px solid var(--accent);
+        border-radius: var(--radius);
+        color: var(--accent);
+        margin-bottom: 20px;
+        display: none;
+        font-weight: 500;
+      }
+
+      .status.visible {
+        display: block;
+      }
+
+      .status.error {
+        border-color: #dc2626;
+        color: #dc2626;
+      }
+
+      /* =============================================
+       ACTIONS
+       ============================================= */
+      .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      /* =============================================
+       DEVICE MOCKUP
+       ============================================= */
+      .device-wrapper {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        position: relative;
+        isolation: isolate;
+      }
+
+      .device-color-toggle {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 2;
+      }
+
+      .color-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 3px solid var(--border);
+        cursor: pointer;
+        transition: all var(--transition);
+      }
+
+      .color-btn:hover {
+        transform: scale(1.1);
+      }
+
+      .color-btn.active {
+        border-color: var(--accent);
+        box-shadow: 0 0 12px var(--accent-glow);
+      }
+
+      .color-btn.black {
+        background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+      }
+
+      .color-btn.white {
+        background: linear-gradient(145deg, #d0d0cb, #c0c0bb);
+      }
+
+      .device-frame {
+        position: relative;
+        padding: 32px 20px 50px 20px;
+        border-radius: 18px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+        transition: all var(--transition);
+        overflow: visible;
+        z-index: 1;
+      }
+
+      .device-frame.black {
+        background: linear-gradient(
+          165deg,
+          #2d2d2d 0%,
+          #1a1a1a 50%,
+          #0d0d0d 100%
+        );
+      }
+
+      .device-frame.white {
+        background: #c4bfa6;
+      }
+
+      /* Small button - top right */
+      .device-frame::after {
+        content: "";
+        position: absolute;
+        top: 100px;
+        right: -4px;
+        width: 4px;
+        height: 50px;
+        border-radius: 0 3px 3px 0;
+      }
+
+      .device-frame.black::after {
+        background: linear-gradient(180deg, #3a3a3a, #2a2a2a);
+      }
+      .device-frame.white::after {
+        background: #b0ab96;
+      }
+
+      /* Large button - right side */
+      .device-btn-large {
+        position: absolute;
+        top: 170px;
+        right: -5px;
+        width: 5px;
+        height: 60px;
+        border-radius: 0 3px 3px 0;
+      }
+
+      .device-frame.black .device-btn-large {
+        background: linear-gradient(180deg, #3a3a3a, #2a2a2a);
+      }
+      .device-frame.white .device-btn-large {
+        background: #b0ab96;
+      }
+
+      /* Bottom buttons */
+      .device-btns-bottom {
+        position: absolute;
+        bottom: 14px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 60px;
+      }
+
+      .device-btn-bottom {
+        width: 50px;
+        height: 6px;
+        border-radius: 3px;
+      }
+
+      .device-frame.black .device-btn-bottom {
+        background: linear-gradient(180deg, #3a3a3a, #252525);
+      }
+      .device-frame.white .device-btn-bottom {
+        background: #b0ab96;
+      }
+
+      .eink-screen {
+        position: relative;
+        width: 336px;
+        height: 560px;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #c4bfa6;
+        box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .eink-screen::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        opacity: 0.04;
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      .preview-canvas {
+        display: block;
+        width: 336px;
+        height: 560px;
+        filter: grayscale(100%) contrast(0.85) brightness(0.68) sepia(0.15);
+      }
+
+      .device-specs {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-align: center;
+        font-family: var(--font-mono);
+        margin-top: 16px;
+      }
+
+      /* =============================================
+       CROP MODE
+       ============================================= */
+      .eink-screen.crop-mode {
+        cursor: grab;
+      }
+
+      .eink-screen.crop-mode:active {
+        cursor: grabbing;
+      }
+
+      .crop-backdrop {
+        display: none;
+        position: absolute;
+        opacity: 0.3;
+        pointer-events: none;
+        filter: grayscale(100%) brightness(0.9);
+        z-index: 0;
+      }
+
+      .crop-backdrop.visible {
+        display: block;
+      }
+
+      /* Crop handles container */
+      .crop-handles {
+        display: none;
+        position: absolute;
+        inset: -12px;
+        pointer-events: none;
+        z-index: 5;
+      }
+
+      .crop-handles.visible {
+        display: block;
+      }
+
+      .crop-handle {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        background: #fff;
+        border: 2px solid var(--accent);
+        border-radius: 4px;
+        pointer-events: auto;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      }
+
+      .crop-handle::before {
+        content: "";
+        position: absolute;
+        inset: 4px;
+        border: 2px solid var(--accent);
+        border-radius: 2px;
+      }
+
+      .crop-handle.tl { top: 0; left: 0; cursor: nwse-resize; }
+      .crop-handle.tr { top: 0; right: 0; cursor: nesw-resize; }
+      .crop-handle.bl { bottom: 0; left: 0; cursor: nesw-resize; }
+      .crop-handle.br { bottom: 0; right: 0; cursor: nwse-resize; }
+
+      .crop-handle.tl::before { border-right: none; border-bottom: none; }
+      .crop-handle.tr::before { border-left: none; border-bottom: none; }
+      .crop-handle.bl::before { border-right: none; border-top: none; }
+      .crop-handle.br::before { border-left: none; border-top: none; }
+
+      /* Crop controls bar */
+      .crop-controls-bar {
+        display: none;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .crop-controls-bar.visible {
+        display: flex;
+      }
+
+      .crop-btn {
+        padding: 8px 16px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all var(--transition);
+        font-family: var(--font-main);
+      }
+
+      .crop-btn-reset {
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border);
+        color: var(--text-secondary);
+      }
+
+      .crop-btn-reset:hover {
+        background: var(--bg-hover);
+        border-color: var(--text-muted);
+      }
+
+      .crop-btn-apply {
+        background: var(--accent);
+        border: none;
+        color: #fff;
+      }
+
+      .crop-btn-apply:hover {
+        background: var(--accent-hover);
+      }
+
+      /* =============================================
+       RESPONSIVE
+       ============================================= */
+      @media (max-width: 900px) {
+        .editor-layout {
+          flex-direction: column;
+        }
+
+        .left-column {
+          order: 2 !important;
+          max-width: 100%;
+          width: 100%;
+        }
+
+        .right-column {
+          order: 1 !important;
+          position: static;
+          width: 100%;
+          margin-bottom: 16px;
+        }
+
+        .crop-backdrop {
+          display: none !important;
+        }
+
+        .right-column .device-frame {
+          padding: 14px 10px 22px 10px;
+          border-radius: 16px;
+        }
+
+        .right-column .eink-screen {
+          width: 144px;
+          height: 240px;
+        }
+
+        .right-column .preview-canvas {
+          width: 144px;
+          height: 240px;
+        }
+
+        .right-column .device-frame::before {
+          font-size: 7px;
+          bottom: 8px;
+        }
+
+        .right-column .device-frame::after {
+          top: 40px;
+          height: 22px;
+          width: 3px;
+        }
+
+        .right-column .color-btn {
+          width: 24px;
+          height: 24px;
+        }
+
+        .right-column .device-specs {
+          display: none;
+        }
+
+        .option-group.cols-4 {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .crop-hint {
+          font-size: 0.65rem;
+        }
+      }
+
+      @media (max-width: 500px) {
+        .option-group.cols-2,
+        .option-group.cols-4 {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="theme-toggle">
+      <button class="toggle-btn" id="themeToggle" title="Toggle dark mode">
+        <span class="toggle-icon sun">☀</span>
+        <span class="toggle-icon moon">☾</span>
+      </button>
     </div>
 
-    <div class="dropzone" id="dropzone">
-      <div class="dropzone-icon">+</div>
-      <p>Drop images here or tap to select</p>
-    </div>
-    <input type="file" id="fileInput" accept="image/*" multiple>
+    <div class="container">
+      <header class="header">
+        <h1>XTEINK X4 Image Converter</h1>
+        <p class="info">Converts to 480×800 BMP</p>
+      </header>
 
-    <div class="editor" id="editor">
-      <div class="editor-layout">
-        <div class="left-column">
-          <div class="panel original-section">
-            <div class="panel-header">Original</div>
-            <img class="original-img" id="originalImg">
-            <div class="file-info" id="fileInfo"></div>
+      <div class="hero" id="heroSection">
+        <div class="hero-before">
+          <div class="hero-placeholder" id="heroPlaceholder">
+            <img
+              class="hero-placeholder-img"
+              id="heroBeforeImg"
+              src="images/examples/watch.JPG"
+              alt="Original"
+            />
           </div>
-
-          <div class="panel">
-            <div class="panel-header">Settings</div>
-
-            <div class="control-group">
-              <label class="control-label">Fit Mode</label>
-              <div class="option-group cols-2" id="fitGroup">
-                <button class="option-btn selected" data-value="crop">
-                  <span class="option-icon">⬚</span>
-                  <span class="option-label">Center Crop</span>
-                  <span class="option-desc">Fills frame, trims edges</span>
-                </button>
-                <button class="option-btn" data-value="letterbox-white">
-                  <span class="option-icon">▢</span>
-                  <span class="option-label">Letterbox Light</span>
-                  <span class="option-desc">Fits inside, white bars</span>
-                </button>
-                <button class="option-btn" data-value="letterbox-black">
-                  <span class="option-icon">■</span>
-                  <span class="option-label">Letterbox Dark</span>
-                  <span class="option-desc">Fits inside, black bars</span>
-                </button>
-                <button class="option-btn" data-value="stretch">
-                  <span class="option-icon">↔</span>
-                  <span class="option-label">Stretch</span>
-                  <span class="option-desc">Distorts to fill frame</span>
-                </button>
-              </div>
-            </div>
-
-            <div class="control-group">
-              <label class="control-label">Contrast</label>
-              <div class="slider-container">
-                <input type="range" class="custom-slider" id="contrastSlider" min="-100" max="100" value="0">
-                <span class="slider-value" id="contrastValue">0</span>
-              </div>
-            </div>
-
-            <div class="control-group">
-              <label class="control-label">Invert (Negative)</label>
-              <div class="option-group cols-2" id="invertGroup">
-                <button class="option-btn compact selected" data-value="off">
-                  <span class="option-icon">◐</span>
-                  <span class="option-label">Normal</span>
-                </button>
-                <button class="option-btn compact" data-value="on">
-                  <span class="option-icon">◑</span>
-                  <span class="option-label">Inverted</span>
-                </button>
-              </div>
-            </div>
-
-            <div class="control-group">
-              <label class="control-label">Shades</label>
-              <div class="option-group cols-4" id="shadesGroup">
-                <button class="option-btn compact selected" data-value="off">
-                  <span class="option-icon">◐</span>
-                  <span class="option-label">Full</span>
-                  <span class="option-desc">256 grays</span>
-                </button>
-                <button class="option-btn compact" data-value="16">
-                  <span class="option-icon">▓</span>
-                  <span class="option-label">16</span>
-                  <span class="option-desc">Smooth</span>
-                </button>
-                <button class="option-btn compact" data-value="8">
-                  <span class="option-icon">▒</span>
-                  <span class="option-label">8</span>
-                  <span class="option-desc">Medium</span>
-                </button>
-                <button class="option-btn compact" data-value="4">
-                  <span class="option-icon">░</span>
-                  <span class="option-label">4</span>
-                  <span class="option-desc">Poster</span>
-                </button>
-                <button class="option-btn compact" data-value="2">
-                  <span class="option-icon">◧</span>
-                  <span class="option-label">2</span>
-                  <span class="option-desc">B&W</span>
-                </button>
-                <button class="option-btn compact" data-value="16d">
-                  <span class="option-icon">▓</span>
-                  <span class="option-label">16+D</span>
-                  <span class="option-desc">Dithered</span>
-                </button>
-                <button class="option-btn compact" data-value="8d">
-                  <span class="option-icon">▒</span>
-                  <span class="option-label">8+D</span>
-                  <span class="option-desc">Dithered</span>
-                </button>
-                <button class="option-btn compact" data-value="4d">
-                  <span class="option-icon">░</span>
-                  <span class="option-label">4+D</span>
-                  <span class="option-desc">Dithered</span>
-                </button>
-              </div>
-            </div>
-
-            <div class="control-group">
-              <label class="control-label">Output Filename</label>
-              <input type="text" class="custom-input" id="filenameInput">
-              <p class="tip">(tip from dylan: always name your files)</p>
+          <span class="hero-label">Original</span>
+        </div>
+        <div class="hero-arrow">→</div>
+        <div class="hero-after">
+          <div class="hero-device black">
+            <div class="hero-screen">
+              <canvas id="heroCanvas" width="480" height="800"></canvas>
             </div>
           </div>
+          <span class="hero-label">480 x 800px bmp</span>
+        </div>
+      </div>
 
-          <div class="thumb-strip" id="thumbStrip"></div>
+      <div class="dropzone" id="dropzone">
+        <div class="dropzone-icon">+</div>
+        <p>Drop images here or tap to select</p>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" multiple />
 
-          <div class="panel apply-panel" id="applyPanel">
-            <div class="panel-header">Apply to All</div>
-            <div class="apply-row">
+      <div class="editor" id="editor">
+        <div class="editor-layout">
+          <div class="left-column">
+            <div class="panel original-section">
+              <div class="panel-header">Original</div>
+              <img class="original-img" id="originalImg" />
+              <div class="file-info" id="fileInfo"></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">Settings</div>
+
               <div class="control-group">
-                <label class="control-label">Fit</label>
-                <div class="option-group" id="applyFitGroup">
-                  <button class="option-btn" data-value="crop">
-                    <span class="option-label">Crop</span>
+                <label class="control-label">Fit Mode</label>
+                <div class="option-group cols-2" id="fitGroup">
+                  <button class="option-btn selected" data-value="crop">
+                    <span class="option-icon">⬚</span>
+                    <span class="option-label">Center Crop</span>
+                    <span class="option-desc">Fills frame, trims edges</span>
                   </button>
                   <button class="option-btn" data-value="letterbox-white">
-                    <span class="option-label">LB Light</span>
+                    <span class="option-icon">▢</span>
+                    <span class="option-label">Letterbox Light</span>
+                    <span class="option-desc">Fits inside, white bars</span>
                   </button>
                   <button class="option-btn" data-value="letterbox-black">
-                    <span class="option-label">LB Dark</span>
+                    <span class="option-icon">■</span>
+                    <span class="option-label">Letterbox Dark</span>
+                    <span class="option-desc">Fits inside, black bars</span>
                   </button>
                   <button class="option-btn" data-value="stretch">
+                    <span class="option-icon">↔</span>
                     <span class="option-label">Stretch</span>
+                    <span class="option-desc">Distorts to fill frame</span>
                   </button>
                 </div>
               </div>
+
               <div class="control-group">
                 <label class="control-label">Contrast</label>
                 <div class="slider-container">
-                  <input type="range" class="custom-slider" id="applyContrast" min="-100" max="100" value="0" style="width: 80px;">
-                  <span class="slider-value" id="applyContrastValue">0</span>
+                  <input
+                    type="range"
+                    class="custom-slider"
+                    id="contrastSlider"
+                    min="-100"
+                    max="100"
+                    value="0"
+                  />
+                  <span class="slider-value" id="contrastValue">0</span>
                 </div>
               </div>
-              <div class="btn-group">
-                <button class="btn btn-sm" id="applyBtn">Apply</button>
-                <button class="btn btn-sm btn-danger" id="clearBtn">Clear All</button>
+
+              <div class="control-group">
+                <label class="control-label">Invert (Negative)</label>
+                <div class="option-group cols-2" id="invertGroup">
+                  <button class="option-btn compact selected" data-value="off">
+                    <span class="option-icon">◐</span>
+                    <span class="option-label">Normal</span>
+                  </button>
+                  <button class="option-btn compact" data-value="on">
+                    <span class="option-icon">◑</span>
+                    <span class="option-label">Inverted</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label class="control-label">Shades</label>
+                <div class="option-group cols-4" id="shadesGroup">
+                  <button class="option-btn compact selected" data-value="off">
+                    <span class="option-icon">◐</span>
+                    <span class="option-label">Full</span>
+                    <span class="option-desc">256 grays</span>
+                  </button>
+                  <button class="option-btn compact" data-value="24">
+                    <span class="option-icon">▓</span>
+                    <span class="option-label">24</span>
+                    <span class="option-desc">Smooth</span>
+                  </button>
+                  <button class="option-btn compact" data-value="16">
+                    <span class="option-icon">▓</span>
+                    <span class="option-label">16</span>
+                    <span class="option-desc">Good</span>
+                  </button>
+                  <button class="option-btn compact" data-value="8">
+                    <span class="option-icon">▒</span>
+                    <span class="option-label">8</span>
+                    <span class="option-desc">Medium</span>
+                  </button>
+                  <button class="option-btn compact" data-value="4">
+                    <span class="option-icon">░</span>
+                    <span class="option-label">4</span>
+                    <span class="option-desc">Poster</span>
+                  </button>
+                  <button class="option-btn compact" data-value="2">
+                    <span class="option-icon">◧</span>
+                    <span class="option-label">2</span>
+                    <span class="option-desc">B&W</span>
+                  </button>
+                  <button class="option-btn compact" data-value="24d">
+                    <span class="option-icon">▓</span>
+                    <span class="option-label">24+D</span>
+                    <span class="option-desc">Dithered</span>
+                  </button>
+                  <button class="option-btn compact" data-value="16d">
+                    <span class="option-icon">▓</span>
+                    <span class="option-label">16+D</span>
+                    <span class="option-desc">Dithered</span>
+                  </button>
+                  <button class="option-btn compact" data-value="8d">
+                    <span class="option-icon">▒</span>
+                    <span class="option-label">8+D</span>
+                    <span class="option-desc">Dithered</span>
+                  </button>
+                  <button class="option-btn compact" data-value="4d">
+                    <span class="option-icon">░</span>
+                    <span class="option-label">4+D</span>
+                    <span class="option-desc">Dithered</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label class="control-label">Output Filename</label>
+                <input type="text" class="custom-input" id="filenameInput" />
+                <p class="tip">(tip from dylan: always name your files)</p>
+              </div>
+            </div>
+
+            <div class="thumb-strip" id="thumbStrip"></div>
+
+            <div class="panel apply-panel" id="applyPanel">
+              <div class="panel-header">Apply to All</div>
+              <div class="apply-row">
+                <div class="control-group">
+                  <label class="control-label">Fit</label>
+                  <div class="option-group" id="applyFitGroup">
+                    <button class="option-btn" data-value="crop">
+                      <span class="option-label">Crop</span>
+                    </button>
+                    <button class="option-btn" data-value="letterbox-white">
+                      <span class="option-label">LB Light</span>
+                    </button>
+                    <button class="option-btn" data-value="letterbox-black">
+                      <span class="option-label">LB Dark</span>
+                    </button>
+                    <button class="option-btn" data-value="stretch">
+                      <span class="option-label">Stretch</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label">Contrast</label>
+                  <div class="slider-container">
+                    <input
+                      type="range"
+                      class="custom-slider"
+                      id="applyContrast"
+                      min="-100"
+                      max="100"
+                      value="0"
+                      style="width: 80px"
+                    />
+                    <span class="slider-value" id="applyContrastValue">0</span>
+                  </div>
+                </div>
+                <div class="btn-group">
+                  <button class="btn btn-sm" id="applyBtn">Apply</button>
+                  <button class="btn btn-sm btn-danger" id="clearBtn">
+                    Clear All
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="status" id="status"></div>
+
+            <div class="actions">
+              <button class="btn btn-primary" id="convertAllBtn">
+                Convert & Download
+              </button>
+            </div>
+
+            <div class="nav-row" id="navRow">
+              <div class="counter">
+                Image <strong><span id="currentIndex">1</span></strong> of
+                <strong><span id="totalCount">1</span></strong>
+              </div>
+              <div class="nav-buttons">
+                <button class="btn btn-sm" id="prevBtn">← Prev</button>
+                <button class="btn btn-sm" id="nextBtn">Next →</button>
               </div>
             </div>
           </div>
 
-          <div class="status" id="status"></div>
-
-          <div class="actions">
-            <button class="btn btn-primary" id="convertAllBtn">Convert & Download</button>
-          </div>
-
-          <div class="nav-row" id="navRow">
-            <div class="counter">
-              Image <strong><span id="currentIndex">1</span></strong> of <strong><span id="totalCount">1</span></strong>
-            </div>
-            <div class="nav-buttons">
-              <button class="btn btn-sm" id="prevBtn">← Prev</button>
-              <button class="btn btn-sm" id="nextBtn">Next →</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="right-column">
-          <div class="device-wrapper">
-            <div class="device-frame black" id="deviceFrame">
-              <div class="eink-screen">
-                <canvas class="preview-canvas" id="previewCanvas" width="480" height="800"></canvas>
+          <div class="right-column">
+            <div class="device-wrapper">
+              <img class="crop-backdrop" id="cropBackdrop" />
+              <div class="device-frame black" id="deviceFrame">
+                <div class="device-btn-large"></div>
+                <div class="device-btns-bottom">
+                  <div class="device-btn-bottom"></div>
+                  <div class="device-btn-bottom"></div>
+                </div>
+                <div class="eink-screen">
+                  <canvas
+                    class="preview-canvas"
+                    id="previewCanvas"
+                    width="480"
+                    height="800"
+                  ></canvas>
+                  <div class="crop-handles" id="cropHandles">
+                    <div class="crop-handle tl" data-handle="tl"></div>
+                    <div class="crop-handle tr" data-handle="tr"></div>
+                    <div class="crop-handle bl" data-handle="bl"></div>
+                    <div class="crop-handle br" data-handle="br"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="device-color-toggle">
+                <button
+                  class="color-btn black active"
+                  id="colorBlack"
+                  title="Space Black"
+                ></button>
+                <button
+                  class="color-btn white"
+                  id="colorWhite"
+                  title="Pearl White"
+                ></button>
               </div>
             </div>
-            <div class="device-color-toggle">
-              <button class="color-btn black active" id="colorBlack" title="Space Black"></button>
-              <button class="color-btn white" id="colorWhite" title="Pearl White"></button>
+            <div class="crop-controls-bar" id="cropControlsBar">
+              <button class="crop-btn crop-btn-reset" id="cropResetBtn">Reset</button>
+              <button class="crop-btn crop-btn-apply" id="cropApplyBtn">Apply Crop</button>
             </div>
+            <div class="device-specs">480×800 • 220 PPI</div>
           </div>
-          <div class="device-specs">4.3" E Ink • 480×800 • 220 PPI • Grayscale</div>
         </div>
       </div>
     </div>
-  </div>
 
-  <script>
-    const WIDTH = 480, HEIGHT = 800;
+    <script>
+      const WIDTH = 480,
+        HEIGHT = 800;
 
-    // Theme Toggle
-    const themeToggle = document.getElementById('themeToggle');
-    const heroDevice = document.querySelector('.hero-device');
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
+      // Theme Toggle
+      const themeToggle = document.getElementById("themeToggle");
+      const heroDevice = document.querySelector(".hero-device");
+      const savedTheme = localStorage.getItem("theme") || "light";
+      document.documentElement.setAttribute("data-theme", savedTheme);
 
-    function updateHeroDeviceColor(theme) {
-      if (!heroDevice) return;
-      // Opposite: light theme = black device, dark theme = white device
-      if (theme === 'light') {
-        heroDevice.classList.remove('white');
-        heroDevice.classList.add('black');
-      } else {
-        heroDevice.classList.remove('black');
-        heroDevice.classList.add('white');
-      }
-    }
-
-    updateHeroDeviceColor(savedTheme);
-
-    themeToggle.addEventListener('click', () => {
-      const current = document.documentElement.getAttribute('data-theme');
-      const next = current === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      updateHeroDeviceColor(next);
-    });
-
-    // Option Group Handler
-    function setupOptionGroup(groupId, onChange) {
-      const group = document.getElementById(groupId);
-      if (!group) return;
-      const buttons = group.querySelectorAll('.option-btn');
-      buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          buttons.forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
-          if (onChange) onChange(btn.dataset.value);
-        });
-      });
-    }
-
-    function getOptionGroupValue(groupId) {
-      const group = document.getElementById(groupId);
-      if (!group) return null;
-      const selected = group.querySelector('.option-btn.selected');
-      return selected ? selected.dataset.value : null;
-    }
-
-    function setOptionGroupValue(groupId, value) {
-      const group = document.getElementById(groupId);
-      if (!group) return;
-      const buttons = group.querySelectorAll('.option-btn');
-      buttons.forEach(btn => {
-        btn.classList.toggle('selected', btn.dataset.value === value);
-      });
-    }
-
-    const dropzone = document.getElementById('dropzone');
-    const fileInput = document.getElementById('fileInput');
-    const editor = document.getElementById('editor');
-    const thumbStrip = document.getElementById('thumbStrip');
-    const applyPanel = document.getElementById('applyPanel');
-    const convertAllBtn = document.getElementById('convertAllBtn');
-    const statusEl = document.getElementById('status');
-    const heroSection = document.getElementById('heroSection');
-    const heroCanvas = document.getElementById('heroCanvas');
-    const heroCtx = heroCanvas.getContext('2d');
-
-    // Hero example images with their conversion settings
-    const heroExamples = [
-      { src: 'images/examples/watch.JPG', fit: 'stretch', contrast: 0, posterize: '2' },
-      { src: 'images/examples/two-panthers.JPG', fit: 'crop', contrast: 0, posterize: '16d' },
-      { src: 'images/examples/three.jpeg', fit: 'letterbox-white', contrast: 0, posterize: '2' }
-    ];
-
-    // Initialize hero canvas - called after helper functions are defined
-    function initHeroCanvas() {
-      const example = heroExamples[0];
-      const heroBeforeImg = document.getElementById('heroBeforeImg');
-      heroBeforeImg.src = example.src;
-      const img = new Image();
-      img.onload = () => {
-        // Use same processing as main converter
-        drawFitted(heroCtx, img, example.fit);
-        const imageData = heroCtx.getImageData(0, 0, WIDTH, HEIGHT);
-        applyContrast(imageData, example.contrast);
-        applyPosterize(imageData, example.posterize);
-        heroCtx.putImageData(imageData, 0, 0);
-      };
-      img.src = example.src;
-    }
-
-    const originalImg = document.getElementById('originalImg');
-    const previewCanvas = document.getElementById('previewCanvas');
-    const previewCtx = previewCanvas.getContext('2d');
-    const fileInfoEl = document.getElementById('fileInfo');
-    const deviceFrame = document.getElementById('deviceFrame');
-
-    const contrastSlider = document.getElementById('contrastSlider');
-    const contrastValue = document.getElementById('contrastValue');
-    const filenameInput = document.getElementById('filenameInput');
-
-    const navRow = document.getElementById('navRow');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const currentIndexEl = document.getElementById('currentIndex');
-    const totalCountEl = document.getElementById('totalCount');
-
-    const colorBlack = document.getElementById('colorBlack');
-    const colorWhite = document.getElementById('colorWhite');
-
-    let queue = [];
-    let currentIdx = 0;
-    let idCounter = 0;
-
-    // Setup option groups
-    setupOptionGroup('fitGroup', () => { saveCurrentSettings(); updatePreview(); });
-    setupOptionGroup('invertGroup', () => { saveCurrentSettings(); updatePreview(); });
-    setupOptionGroup('shadesGroup', () => { saveCurrentSettings(); updatePreview(); });
-    setupOptionGroup('applyFitGroup', null);
-
-    // Device color toggle
-    colorBlack.onclick = () => {
-      colorBlack.classList.add('active');
-      colorWhite.classList.remove('active');
-      deviceFrame.classList.remove('white');
-      deviceFrame.classList.add('black');
-    };
-    colorWhite.onclick = () => {
-      colorWhite.classList.add('active');
-      colorBlack.classList.remove('active');
-      deviceFrame.classList.remove('black');
-      deviceFrame.classList.add('white');
-    };
-
-    // Dropzone events
-    dropzone.onclick = () => fileInput.click();
-    dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('dragover'); };
-    dropzone.ondragleave = () => dropzone.classList.remove('dragover');
-    dropzone.ondrop = (e) => {
-      e.preventDefault();
-      dropzone.classList.remove('dragover');
-      handleFiles(e.dataTransfer.files);
-    };
-    fileInput.onchange = (e) => { handleFiles(e.target.files); fileInput.value = ''; };
-
-    const MAX_IMAGES = 8;
-
-    function handleFiles(files) {
-      for (const file of files) {
-        if (!file.type.startsWith('image/')) continue;
-        if (queue.length >= MAX_IMAGES) {
-          statusEl.className = 'status visible error';
-          statusEl.textContent = `Maximum ${MAX_IMAGES} images allowed`;
-          setTimeout(() => statusEl.classList.remove('visible'), 3000);
-          break;
+      function updateHeroDeviceColor(theme) {
+        if (!heroDevice) return;
+        // Opposite: light theme = black device, dark theme = white device
+        if (theme === "light") {
+          heroDevice.classList.remove("white");
+          heroDevice.classList.add("black");
+        } else {
+          heroDevice.classList.remove("black");
+          heroDevice.classList.add("white");
         }
-        addToQueue(file);
       }
-    }
 
-    function addToQueue(file) {
-      const id = ++idCounter;
-      const baseName = file.name.replace(/\.[^.]+$/, '');
-      const timestamp = formatTimestamp(new Date());
-      const item = {
-        id, file, img: null, fit: 'crop', contrast: 0, invert: 'off', posterize: 'off',
-        filename: `${baseName}_480x800_${timestamp}.bmp`
-      };
-      queue.push(item);
+      updateHeroDeviceColor(savedTheme);
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
+      themeToggle.addEventListener("click", () => {
+        const current = document.documentElement.getAttribute("data-theme");
+        const next = current === "light" ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+        updateHeroDeviceColor(next);
+      });
+
+      // Option Group Handler
+      function setupOptionGroup(groupId, onChange) {
+        const group = document.getElementById(groupId);
+        if (!group) return;
+        const buttons = group.querySelectorAll(".option-btn");
+        buttons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            buttons.forEach((b) => b.classList.remove("selected"));
+            btn.classList.add("selected");
+            if (onChange) onChange(btn.dataset.value);
+          });
+        });
+      }
+
+      function getOptionGroupValue(groupId) {
+        const group = document.getElementById(groupId);
+        if (!group) return null;
+        const selected = group.querySelector(".option-btn.selected");
+        return selected ? selected.dataset.value : null;
+      }
+
+      function setOptionGroupValue(groupId, value) {
+        const group = document.getElementById(groupId);
+        if (!group) return;
+        const buttons = group.querySelectorAll(".option-btn");
+        buttons.forEach((btn) => {
+          btn.classList.toggle("selected", btn.dataset.value === value);
+        });
+      }
+
+      const dropzone = document.getElementById("dropzone");
+      const fileInput = document.getElementById("fileInput");
+      const editor = document.getElementById("editor");
+      const thumbStrip = document.getElementById("thumbStrip");
+      const applyPanel = document.getElementById("applyPanel");
+      const convertAllBtn = document.getElementById("convertAllBtn");
+      const statusEl = document.getElementById("status");
+      const heroSection = document.getElementById("heroSection");
+      const heroCanvas = document.getElementById("heroCanvas");
+      const heroCtx = heroCanvas.getContext("2d");
+
+      // Hero example images with their conversion settings
+      const heroExamples = [
+        {
+          src: "images/examples/watch.JPG",
+          fit: "stretch",
+          contrast: 0,
+          posterize: "2",
+        },
+        {
+          src: "images/examples/two-panthers.JPG",
+          fit: "crop",
+          contrast: 0,
+          posterize: "16d",
+        },
+        {
+          src: "images/examples/three.jpeg",
+          fit: "letterbox-white",
+          contrast: 0,
+          posterize: "2",
+        },
+      ];
+
+      // Initialize hero canvas - called after helper functions are defined
+      function initHeroCanvas() {
+        const example = heroExamples[0];
+        const heroBeforeImg = document.getElementById("heroBeforeImg");
+        heroBeforeImg.src = example.src;
         const img = new Image();
         img.onload = () => {
-          item.img = img;
-          renderThumbnails();
-          if (queue.length === 1 || queue[currentIdx]?.id === item.id) {
-            showImage(queue.length - 1);
-          }
-          updateUI();
+          // Use same processing as main converter
+          drawFitted(heroCtx, img, example.fit);
+          const imageData = heroCtx.getImageData(0, 0, WIDTH, HEIGHT);
+          applyContrast(imageData, example.contrast);
+          applyPosterize(imageData, example.posterize);
+          heroCtx.putImageData(imageData, 0, 0);
         };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-      updateUI();
-    }
+        img.src = example.src;
+      }
 
-    function formatTimestamp(date) {
-      const pad = (n) => String(n).padStart(2, '0');
-      return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
-    }
+      const originalImg = document.getElementById("originalImg");
+      const previewCanvas = document.getElementById("previewCanvas");
+      const previewCtx = previewCanvas.getContext("2d");
+      const fileInfoEl = document.getElementById("fileInfo");
+      const deviceFrame = document.getElementById("deviceFrame");
 
-    function removeFromQueue(id) {
-      const idx = queue.findIndex(item => item.id === id);
-      if (idx === -1) return;
-      queue.splice(idx, 1);
-      if (queue.length === 0) currentIdx = 0;
-      else if (currentIdx >= queue.length) currentIdx = queue.length - 1;
-      renderThumbnails();
-      if (queue.length > 0) showImage(currentIdx);
-      updateUI();
-    }
+      const contrastSlider = document.getElementById("contrastSlider");
+      const contrastValue = document.getElementById("contrastValue");
+      const filenameInput = document.getElementById("filenameInput");
 
-    function updateUI() {
-      const hasImages = queue.length > 0;
-      const allLoaded = queue.every(item => item.img);
-      editor.classList.toggle('visible', hasImages);
-      dropzone.classList.toggle('hidden', hasImages);
-      heroSection.classList.toggle('hidden', hasImages);
-      navRow.classList.toggle('visible', queue.length > 1);
-      applyPanel.classList.toggle('visible', queue.length >= 2);
-      convertAllBtn.disabled = !hasImages || !allLoaded;
-      convertAllBtn.textContent = queue.length > 1 ? 'Convert & Download ZIP' : 'Convert & Download';
-      totalCountEl.textContent = queue.length;
-      currentIndexEl.textContent = queue.length > 0 ? currentIdx + 1 : 0;
-      prevBtn.disabled = currentIdx === 0;
-      nextBtn.disabled = currentIdx >= queue.length - 1;
-    }
+      const navRow = document.getElementById("navRow");
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const currentIndexEl = document.getElementById("currentIndex");
+      const totalCountEl = document.getElementById("totalCount");
 
-    function renderThumbnails() {
-      thumbStrip.innerHTML = '';
-      queue.forEach((item, idx) => {
-        const div = document.createElement('div');
-        div.className = 'thumb-item' + (idx === currentIdx ? ' active' : '');
-        div.innerHTML = `<img src="${item.img ? item.img.src : ''}"><button class="thumb-remove">×</button>`;
-        div.onclick = (e) => {
-          if (e.target.classList.contains('thumb-remove')) removeFromQueue(item.id);
-          else showImage(idx);
-        };
-        thumbStrip.appendChild(div);
+      const colorBlack = document.getElementById("colorBlack");
+      const colorWhite = document.getElementById("colorWhite");
+      const cropHandles = document.getElementById("cropHandles");
+      const cropControlsBar = document.getElementById("cropControlsBar");
+      const cropResetBtn = document.getElementById("cropResetBtn");
+      const cropApplyBtn = document.getElementById("cropApplyBtn");
+      const cropBackdrop = document.getElementById("cropBackdrop");
+      const einkScreen = document.querySelector(".eink-screen");
+
+      let queue = [];
+      let currentIdx = 0;
+      let idCounter = 0;
+
+      // Crop drag state
+      let isDragging = false;
+      let isResizing = false;
+      let activeHandle = null;
+      let dragStartX = 0;
+      let dragStartY = 0;
+      let dragStartCropX = 0;
+      let dragStartCropY = 0;
+      let dragStartZoom = 1;
+
+      // Setup option groups
+      setupOptionGroup("fitGroup", () => {
+        saveCurrentSettings();
+        updatePreview();
+        updateCropUI();
       });
-    }
+      setupOptionGroup("invertGroup", () => {
+        saveCurrentSettings();
+        updatePreview();
+      });
+      setupOptionGroup("shadesGroup", () => {
+        saveCurrentSettings();
+        updatePreview();
+      });
+      setupOptionGroup("applyFitGroup", null);
 
-    function showImage(idx) {
-      if (idx < 0 || idx >= queue.length) return;
-      if (queue[currentIdx]) saveCurrentSettings();
-      currentIdx = idx;
-      const item = queue[idx];
-      if (!item.img) return;
-      originalImg.src = item.img.src;
-      fileInfoEl.innerHTML = `<strong>${item.file.name}</strong><br>${item.img.width} × ${item.img.height}`;
-      setOptionGroupValue('fitGroup', item.fit);
-      contrastSlider.value = item.contrast;
-      contrastValue.textContent = item.contrast;
-      setOptionGroupValue('invertGroup', item.invert);
-      setOptionGroupValue('shadesGroup', item.posterize);
-      filenameInput.value = item.filename;
-      updatePreview();
-      renderThumbnails();
-      updateUI();
-    }
+      // Device color toggle
+      colorBlack.onclick = () => {
+        colorBlack.classList.add("active");
+        colorWhite.classList.remove("active");
+        deviceFrame.classList.remove("white");
+        deviceFrame.classList.add("black");
+      };
+      colorWhite.onclick = () => {
+        colorWhite.classList.add("active");
+        colorBlack.classList.remove("active");
+        deviceFrame.classList.remove("black");
+        deviceFrame.classList.add("white");
+      };
 
-    function saveCurrentSettings() {
-      const item = queue[currentIdx];
-      if (!item) return;
-      item.fit = getOptionGroupValue('fitGroup') || 'crop';
-      item.contrast = parseInt(contrastSlider.value);
-      item.invert = getOptionGroupValue('invertGroup') || 'off';
-      item.posterize = getOptionGroupValue('shadesGroup') || 'off';
-      item.filename = filenameInput.value;
-    }
+      // Crop drag handlers
+      einkScreen.addEventListener("mousedown", startDrag);
+      einkScreen.addEventListener("touchstart", startDrag, { passive: false });
+      document.addEventListener("mousemove", onDrag);
+      document.addEventListener("touchmove", onDrag, { passive: false });
+      document.addEventListener("mouseup", endDrag);
+      document.addEventListener("touchend", endDrag);
 
-    function updatePreview() {
-      const item = queue[currentIdx];
-      if (!item || !item.img) return;
-      const fit = getOptionGroupValue('fitGroup') || 'crop';
-      const invert = getOptionGroupValue('invertGroup') || 'off';
-      const posterize = getOptionGroupValue('shadesGroup') || 'off';
-      const fullCanvas = document.createElement('canvas');
-      fullCanvas.width = WIDTH;
-      fullCanvas.height = HEIGHT;
-      const fullCtx = fullCanvas.getContext('2d');
-      drawFitted(fullCtx, item.img, fit);
-      const imageData = fullCtx.getImageData(0, 0, WIDTH, HEIGHT);
-      applyContrast(imageData, parseInt(contrastSlider.value));
-      if (invert === 'on') applyInvert(imageData);
-      applyPosterize(imageData, posterize);
-      fullCtx.putImageData(imageData, 0, 0);
-      previewCtx.drawImage(fullCanvas, 0, 0);
-    }
+      // Handle resize handlers
+      document.querySelectorAll(".crop-handle").forEach(handle => {
+        handle.addEventListener("mousedown", startResize);
+        handle.addEventListener("touchstart", startResize, { passive: false });
+      });
 
-    contrastSlider.oninput = () => {
-      contrastValue.textContent = contrastSlider.value;
-      saveCurrentSettings();
-      updatePreview();
-    };
-    filenameInput.oninput = () => { saveCurrentSettings(); };
+      function startResize(e) {
+        const item = queue[currentIdx];
+        if (!item || !item.img) return;
 
-    prevBtn.onclick = () => { if (currentIdx > 0) showImage(currentIdx - 1); };
-    nextBtn.onclick = () => { if (currentIdx < queue.length - 1) showImage(currentIdx + 1); };
+        e.preventDefault();
+        e.stopPropagation();
+        isResizing = true;
+        activeHandle = e.target.dataset.handle;
 
-    document.getElementById('applyContrast').oninput = (e) => {
-      document.getElementById('applyContrastValue').textContent = e.target.value;
-    };
-
-    document.getElementById('applyBtn').onclick = () => {
-      const fit = getOptionGroupValue('applyFitGroup');
-      const contrast = parseInt(document.getElementById('applyContrast').value);
-      for (const item of queue) {
-        if (fit) item.fit = fit;
-        item.contrast = contrast;
+        const touch = e.touches ? e.touches[0] : e;
+        dragStartX = touch.clientX;
+        dragStartY = touch.clientY;
+        dragStartZoom = item.cropZoom || 1;
+        dragStartCropX = item.cropX;
+        dragStartCropY = item.cropY;
       }
-      showImage(currentIdx);
-    };
 
-    document.getElementById('clearBtn').onclick = () => {
-      queue = [];
-      currentIdx = 0;
-      thumbStrip.innerHTML = '';
-      updateUI();
-    };
+      function onResize(e) {
+        if (!isResizing) return;
+        e.preventDefault();
 
-    convertAllBtn.onclick = async () => {
-      if (queue.length === 0) return;
-      saveCurrentSettings();
-      convertAllBtn.disabled = true;
-      statusEl.className = 'status visible';
+        const item = queue[currentIdx];
+        if (!item || !item.img) return;
 
-      const filenames = new Map();
-      for (const item of queue) {
-        let name = item.filename.trim();
-        if (!name.toLowerCase().endsWith('.bmp')) name += '.bmp';
-        const baseName = name.slice(0, -4);
-        let finalName = name;
-        let counter = 2;
-        while (filenames.has(finalName.toLowerCase())) {
-          finalName = `${baseName}_${counter}.bmp`;
-          counter++;
+        const touch = e.touches ? e.touches[0] : e;
+        const dx = touch.clientX - dragStartX;
+        const dy = touch.clientY - dragStartY;
+
+        // Calculate zoom change based on drag direction
+        // Dragging outward (away from center) = zoom in, inward = zoom out
+        let delta = 0;
+        if (activeHandle === "br") delta = (dx + dy) / 2;
+        else if (activeHandle === "bl") delta = (-dx + dy) / 2;
+        else if (activeHandle === "tr") delta = (dx - dy) / 2;
+        else if (activeHandle === "tl") delta = (-dx - dy) / 2;
+
+        // Convert to zoom factor (negative delta = zoom in because handles move inward)
+        const zoomChange = -delta / 150;
+        const newZoom = Math.max(1, Math.min(4, dragStartZoom + zoomChange));
+
+        item.cropZoom = newZoom;
+
+        // Keep crop position centered as much as possible
+        updatePreview();
+        updateCropBackdrop();
+      }
+
+      function startDrag(e) {
+        const item = queue[currentIdx];
+        if (!item || !item.img) return;
+        const fit = getOptionGroupValue("fitGroup");
+        if (fit !== "crop") return;
+        if (!canCrop(item.img, item.cropZoom)) return;
+
+        e.preventDefault();
+        isDragging = true;
+        einkScreen.classList.add("crop-mode");
+
+        const touch = e.touches ? e.touches[0] : e;
+        dragStartX = touch.clientX;
+        dragStartY = touch.clientY;
+        dragStartCropX = item.cropX;
+        dragStartCropY = item.cropY;
+      }
+
+      function onDrag(e) {
+        if (isResizing) {
+          onResize(e);
+          return;
         }
-        filenames.set(finalName.toLowerCase(), item);
-        item._finalFilename = finalName;
-      }
+        if (!isDragging) return;
+        e.preventDefault();
 
-      // Single file: download directly
-      if (queue.length === 1) {
-        statusEl.textContent = 'Converting...';
-        try {
-          const blob = await processImage(queue[0]);
-          downloadBlob(blob, queue[0]._finalFilename);
-          statusEl.textContent = 'Done! Downloaded image.';
-        } catch (err) {
-          statusEl.className = 'status visible error';
-          statusEl.textContent = `Error: ${err.message}`;
+        const item = queue[currentIdx];
+        if (!item || !item.img) return;
+
+        const touch = e.touches ? e.touches[0] : e;
+        const dx = touch.clientX - dragStartX;
+        const dy = touch.clientY - dragStartY;
+
+        // Get the display size of the eink screen
+        const rect = einkScreen.getBoundingClientRect();
+        const zoom = item.cropZoom || 1;
+
+        const srcRatio = item.img.width / item.img.height;
+        const dstRatio = WIDTH / HEIGHT;
+
+        // Calculate backdrop size (same logic as updateCropBackdrop)
+        let backdropW, backdropH;
+        if (srcRatio > dstRatio) {
+          backdropH = rect.height * zoom;
+          backdropW = backdropH * srcRatio;
+        } else {
+          backdropW = rect.width * zoom;
+          backdropH = backdropW / srcRatio;
         }
-        convertAllBtn.disabled = false;
-        return;
+
+        // Extra space that can be panned
+        const extraW = backdropW - rect.width;
+        const extraH = backdropH - rect.height;
+
+        // Convert drag distance to crop offset change (0-1 range)
+        const offsetChangeX = extraW > 0 ? -dx / extraW : 0;
+        const offsetChangeY = extraH > 0 ? -dy / extraH : 0;
+
+        item.cropX = Math.max(0, Math.min(1, dragStartCropX + offsetChangeX));
+        item.cropY = Math.max(0, Math.min(1, dragStartCropY + offsetChangeY));
+
+        updatePreview();
+        updateCropBackdrop();
       }
 
-      // Multiple files: create ZIP
-      const zip = new JSZip();
-      for (let i = 0; i < queue.length; i++) {
-        const item = queue[i];
-        statusEl.textContent = `Converting ${i + 1}/${queue.length}...`;
-        try {
-          const blob = await processImage(item);
-          zip.file(item._finalFilename, blob);
-        } catch (err) {
-          statusEl.className = 'status visible error';
-          statusEl.textContent = `Error: ${err.message}`;
+      function endDrag() {
+        if (isDragging || isResizing) {
+          isDragging = false;
+          isResizing = false;
+          activeHandle = null;
+        }
+      }
+
+      function canCrop(img, zoom = 1) {
+        // Check if image has any "extra" area that can be cropped
+        // Always true if zoomed in, or if aspect ratios differ
+        if (zoom > 1) return true;
+        const srcRatio = img.width / img.height;
+        const dstRatio = WIDTH / HEIGHT;
+        return Math.abs(srcRatio - dstRatio) > 0.01;
+      }
+
+      function updateCropUI() {
+        const item = queue[currentIdx];
+        const fit = getOptionGroupValue("fitGroup");
+        const showCropUI = fit === "crop" && item && item.img;
+
+        cropHandles.classList.toggle("visible", showCropUI);
+        cropControlsBar.classList.toggle("visible", showCropUI);
+        cropBackdrop.classList.toggle("visible", showCropUI);
+        einkScreen.classList.toggle("crop-mode", showCropUI);
+
+        if (showCropUI) {
+          updateCropBackdrop();
+        }
+      }
+
+      function updateCropBackdrop() {
+        const item = queue[currentIdx];
+        if (!item || !item.img) return;
+
+        const screenRect = einkScreen.getBoundingClientRect();
+        const wrapperRect = document
+          .querySelector(".device-wrapper")
+          .getBoundingClientRect();
+        const screenW = screenRect.width;
+        const screenH = screenRect.height;
+        const zoom = item.cropZoom || 1;
+
+        // Position of eink-screen relative to device-wrapper
+        const screenOffsetX = screenRect.left - wrapperRect.left;
+        const screenOffsetY = screenRect.top - wrapperRect.top;
+
+        const srcRatio = item.img.width / item.img.height;
+        const dstRatio = WIDTH / HEIGHT;
+
+        // Calculate how big the full image should be displayed
+        // The visible portion (screenW x screenH) shows a cropped+zoomed part
+        // So the full image needs to be scaled proportionally
+        let backdropW, backdropH;
+
+        if (srcRatio > dstRatio) {
+          // Image is wider - screen height matches cropped height (before zoom)
+          // Full image height = screen height * zoom (since zoom crops smaller area)
+          backdropH = screenH * zoom;
+          backdropW = backdropH * srcRatio;
+        } else {
+          // Image is taller - screen width matches cropped width (before zoom)
+          backdropW = screenW * zoom;
+          backdropH = backdropW / srcRatio;
+        }
+
+        // Calculate the offset to position the backdrop
+        // cropX/cropY represent where in the "pannable" range we are (0 to 1)
+        const extraW = backdropW - screenW;
+        const extraH = backdropH - screenH;
+        const offsetX = -extraW * item.cropX;
+        const offsetY = -extraH * item.cropY;
+
+        // Position backdrop so visible screen area shows correct portion
+        const left = screenOffsetX + offsetX;
+        const top = screenOffsetY + offsetY;
+
+        cropBackdrop.src = item.img.src;
+        cropBackdrop.style.width = backdropW + "px";
+        cropBackdrop.style.height = backdropH + "px";
+        cropBackdrop.style.left = left + "px";
+        cropBackdrop.style.top = top + "px";
+      }
+
+      cropResetBtn.onclick = () => {
+        const item = queue[currentIdx];
+        if (item) {
+          item.cropX = 0.5;
+          item.cropY = 0.5;
+          item.cropZoom = 1;
+          updatePreview();
+          updateCropBackdrop();
+        }
+      };
+
+      cropApplyBtn.onclick = () => {
+        saveCurrentSettings();
+        // Visual feedback
+        cropApplyBtn.textContent = "Applied!";
+        setTimeout(() => {
+          cropApplyBtn.textContent = "Apply Crop";
+        }, 1000);
+      };
+
+      // Dropzone events
+      dropzone.onclick = () => fileInput.click();
+      dropzone.ondragover = (e) => {
+        e.preventDefault();
+        dropzone.classList.add("dragover");
+      };
+      dropzone.ondragleave = () => dropzone.classList.remove("dragover");
+      dropzone.ondrop = (e) => {
+        e.preventDefault();
+        dropzone.classList.remove("dragover");
+        handleFiles(e.dataTransfer.files);
+      };
+      fileInput.onchange = (e) => {
+        handleFiles(e.target.files);
+        fileInput.value = "";
+      };
+
+      const MAX_IMAGES = 8;
+
+      function handleFiles(files) {
+        for (const file of files) {
+          if (!file.type.startsWith("image/")) continue;
+          if (queue.length >= MAX_IMAGES) {
+            statusEl.className = "status visible error";
+            statusEl.textContent = `Maximum ${MAX_IMAGES} images allowed`;
+            setTimeout(() => statusEl.classList.remove("visible"), 3000);
+            break;
+          }
+          addToQueue(file);
+        }
+      }
+
+      function addToQueue(file) {
+        const id = ++idCounter;
+        const baseName = file.name.replace(/\.[^.]+$/, "");
+        const timestamp = formatTimestamp(new Date());
+        const item = {
+          id,
+          file,
+          img: null,
+          fit: "crop",
+          contrast: 0,
+          invert: "off",
+          posterize: "off",
+          filename: `${baseName}_480x800_${timestamp}.bmp`,
+          cropX: 0.5,
+          cropY: 0.5,
+          cropZoom: 1,
+        };
+        queue.push(item);
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            item.img = img;
+            renderThumbnails();
+            if (queue.length === 1 || queue[currentIdx]?.id === item.id) {
+              showImage(queue.length - 1);
+            }
+            updateUI();
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        updateUI();
+      }
+
+      function formatTimestamp(date) {
+        const pad = (n) => String(n).padStart(2, "0");
+        return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
+      }
+
+      function removeFromQueue(id) {
+        const idx = queue.findIndex((item) => item.id === id);
+        if (idx === -1) return;
+        queue.splice(idx, 1);
+        if (queue.length === 0) currentIdx = 0;
+        else if (currentIdx >= queue.length) currentIdx = queue.length - 1;
+        renderThumbnails();
+        if (queue.length > 0) showImage(currentIdx);
+        updateUI();
+      }
+
+      function updateUI() {
+        const hasImages = queue.length > 0;
+        const allLoaded = queue.every((item) => item.img);
+        editor.classList.toggle("visible", hasImages);
+        dropzone.classList.toggle("hidden", hasImages);
+        heroSection.classList.toggle("hidden", hasImages);
+        navRow.classList.toggle("visible", queue.length > 1);
+        applyPanel.classList.toggle("visible", queue.length >= 2);
+        convertAllBtn.disabled = !hasImages || !allLoaded;
+        convertAllBtn.textContent =
+          queue.length > 1 ? "Convert & Download ZIP" : "Convert & Download";
+        totalCountEl.textContent = queue.length;
+        currentIndexEl.textContent = queue.length > 0 ? currentIdx + 1 : 0;
+        prevBtn.disabled = currentIdx === 0;
+        nextBtn.disabled = currentIdx >= queue.length - 1;
+      }
+
+      function renderThumbnails() {
+        thumbStrip.innerHTML = "";
+        queue.forEach((item, idx) => {
+          const div = document.createElement("div");
+          div.className = "thumb-item" + (idx === currentIdx ? " active" : "");
+          div.innerHTML = `<img src="${item.img ? item.img.src : ""}"><button class="thumb-remove">×</button>`;
+          div.onclick = (e) => {
+            if (e.target.classList.contains("thumb-remove"))
+              removeFromQueue(item.id);
+            else showImage(idx);
+          };
+          thumbStrip.appendChild(div);
+        });
+      }
+
+      function showImage(idx) {
+        if (idx < 0 || idx >= queue.length) return;
+        if (queue[currentIdx]) saveCurrentSettings();
+        currentIdx = idx;
+        const item = queue[idx];
+        if (!item.img) return;
+        originalImg.src = item.img.src;
+        fileInfoEl.innerHTML = `<strong>${item.file.name}</strong><br>${item.img.width} × ${item.img.height}`;
+        setOptionGroupValue("fitGroup", item.fit);
+        contrastSlider.value = item.contrast;
+        contrastValue.textContent = item.contrast;
+        setOptionGroupValue("invertGroup", item.invert);
+        setOptionGroupValue("shadesGroup", item.posterize);
+        filenameInput.value = item.filename;
+        updatePreview();
+        updateCropUI();
+        renderThumbnails();
+        updateUI();
+      }
+
+      function saveCurrentSettings() {
+        const item = queue[currentIdx];
+        if (!item) return;
+        item.fit = getOptionGroupValue("fitGroup") || "crop";
+        item.contrast = parseInt(contrastSlider.value);
+        item.invert = getOptionGroupValue("invertGroup") || "off";
+        item.posterize = getOptionGroupValue("shadesGroup") || "off";
+        item.filename = filenameInput.value;
+        // cropX and cropY are saved directly during drag
+      }
+
+      function updatePreview() {
+        const item = queue[currentIdx];
+        if (!item || !item.img) return;
+        const fit = getOptionGroupValue("fitGroup") || "crop";
+        const invert = getOptionGroupValue("invertGroup") || "off";
+        const posterize = getOptionGroupValue("shadesGroup") || "off";
+        const fullCanvas = document.createElement("canvas");
+        fullCanvas.width = WIDTH;
+        fullCanvas.height = HEIGHT;
+        const fullCtx = fullCanvas.getContext("2d");
+        drawFitted(
+          fullCtx,
+          item.img,
+          fit,
+          item.cropX,
+          item.cropY,
+          item.cropZoom,
+        );
+        const imageData = fullCtx.getImageData(0, 0, WIDTH, HEIGHT);
+        applyContrast(imageData, parseInt(contrastSlider.value));
+        if (invert === "on") applyInvert(imageData);
+        applyPosterize(imageData, posterize);
+        fullCtx.putImageData(imageData, 0, 0);
+        previewCtx.drawImage(fullCanvas, 0, 0);
+      }
+
+      contrastSlider.oninput = () => {
+        contrastValue.textContent = contrastSlider.value;
+        saveCurrentSettings();
+        updatePreview();
+      };
+      filenameInput.oninput = () => {
+        saveCurrentSettings();
+      };
+
+      prevBtn.onclick = () => {
+        if (currentIdx > 0) showImage(currentIdx - 1);
+      };
+      nextBtn.onclick = () => {
+        if (currentIdx < queue.length - 1) showImage(currentIdx + 1);
+      };
+
+      document.getElementById("applyContrast").oninput = (e) => {
+        document.getElementById("applyContrastValue").textContent =
+          e.target.value;
+      };
+
+      document.getElementById("applyBtn").onclick = () => {
+        const fit = getOptionGroupValue("applyFitGroup");
+        const contrast = parseInt(
+          document.getElementById("applyContrast").value,
+        );
+        for (const item of queue) {
+          if (fit) item.fit = fit;
+          item.contrast = contrast;
+        }
+        showImage(currentIdx);
+      };
+
+      document.getElementById("clearBtn").onclick = () => {
+        queue = [];
+        currentIdx = 0;
+        thumbStrip.innerHTML = "";
+        updateUI();
+      };
+
+      convertAllBtn.onclick = async () => {
+        if (queue.length === 0) return;
+        saveCurrentSettings();
+        convertAllBtn.disabled = true;
+        statusEl.className = "status visible";
+
+        const filenames = new Map();
+        for (const item of queue) {
+          let name = item.filename.trim();
+          if (!name.toLowerCase().endsWith(".bmp")) name += ".bmp";
+          const baseName = name.slice(0, -4);
+          let finalName = name;
+          let counter = 2;
+          while (filenames.has(finalName.toLowerCase())) {
+            finalName = `${baseName}_${counter}.bmp`;
+            counter++;
+          }
+          filenames.set(finalName.toLowerCase(), item);
+          item._finalFilename = finalName;
+        }
+
+        // Single file: download directly
+        if (queue.length === 1) {
+          statusEl.textContent = "Converting...";
+          try {
+            const blob = await processImage(queue[0]);
+            downloadBlob(blob, queue[0]._finalFilename);
+            statusEl.textContent = "Done! Downloaded image.";
+          } catch (err) {
+            statusEl.className = "status visible error";
+            statusEl.textContent = `Error: ${err.message}`;
+          }
           convertAllBtn.disabled = false;
           return;
         }
-      }
 
-      statusEl.textContent = 'Creating ZIP...';
-      try {
-        const zipBlob = await zip.generateAsync({ type: 'blob' });
-        const timestamp = formatTimestamp(new Date());
-        downloadBlob(zipBlob, `xteink_images_${timestamp}.zip`);
-        statusEl.textContent = `Done! Downloaded ${queue.length} images as ZIP.`;
-      } catch (err) {
-        statusEl.className = 'status visible error';
-        statusEl.textContent = `Error creating ZIP: ${err.message}`;
-      }
-      convertAllBtn.disabled = false;
-    };
-
-    function drawFitted(ctx, img, fit) {
-      const srcRatio = img.width / img.height;
-      const dstRatio = WIDTH / HEIGHT;
-      if (fit === 'crop') {
-        let sx = 0, sy = 0, sw = img.width, sh = img.height;
-        if (srcRatio > dstRatio) { sw = img.height * dstRatio; sx = (img.width - sw) / 2; }
-        else { sh = img.width / dstRatio; sy = (img.height - sh) / 2; }
-        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, WIDTH, HEIGHT);
-      } else if (fit === 'letterbox-white' || fit === 'letterbox-black') {
-        ctx.fillStyle = fit === 'letterbox-white' ? '#fff' : '#000';
-        ctx.fillRect(0, 0, WIDTH, HEIGHT);
-        let dw, dh, dx, dy;
-        if (srcRatio > dstRatio) { dw = WIDTH; dh = WIDTH / srcRatio; dx = 0; dy = (HEIGHT - dh) / 2; }
-        else { dh = HEIGHT; dw = HEIGHT * srcRatio; dx = (WIDTH - dw) / 2; dy = 0; }
-        ctx.drawImage(img, dx, dy, dw, dh);
-      } else if (fit === 'stretch') {
-        ctx.drawImage(img, 0, 0, WIDTH, HEIGHT);
-      }
-    }
-
-    function applyContrast(imageData, amount) {
-      if (amount === 0) return;
-      const data = imageData.data;
-      const factor = (259 * (amount + 255)) / (255 * (259 - amount));
-      for (let i = 0; i < data.length; i += 4) {
-        data[i] = clamp(factor * (data[i] - 128) + 128);
-        data[i + 1] = clamp(factor * (data[i + 1] - 128) + 128);
-        data[i + 2] = clamp(factor * (data[i + 2] - 128) + 128);
-      }
-    }
-
-    function applyPosterize(imageData, mode) {
-      if (mode === 'off') return;
-      const data = imageData.data;
-      const dither = mode.endsWith('d');
-      const shades = parseInt(mode);
-      const step = 255 / (shades - 1);
-      const gray = new Float32Array(WIDTH * HEIGHT);
-      for (let i = 0; i < gray.length; i++) {
-        const idx = i * 4;
-        gray[i] = 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
-      }
-      if (dither) {
-        for (let y = 0; y < HEIGHT; y++) {
-          for (let x = 0; x < WIDTH; x++) {
-            const i = y * WIDTH + x;
-            const oldVal = gray[i];
-            const newVal = Math.round(oldVal / step) * step;
-            gray[i] = newVal;
-            const error = oldVal - newVal;
-            if (x + 1 < WIDTH) gray[i + 1] += error * 7 / 16;
-            if (y + 1 < HEIGHT) {
-              if (x > 0) gray[i + WIDTH - 1] += error * 3 / 16;
-              gray[i + WIDTH] += error * 5 / 16;
-              if (x + 1 < WIDTH) gray[i + WIDTH + 1] += error * 1 / 16;
-            }
+        // Multiple files: create ZIP
+        const zip = new JSZip();
+        for (let i = 0; i < queue.length; i++) {
+          const item = queue[i];
+          statusEl.textContent = `Converting ${i + 1}/${queue.length}...`;
+          try {
+            const blob = await processImage(item);
+            zip.file(item._finalFilename, blob);
+          } catch (err) {
+            statusEl.className = "status visible error";
+            statusEl.textContent = `Error: ${err.message}`;
+            convertAllBtn.disabled = false;
+            return;
           }
         }
-      } else {
-        for (let i = 0; i < gray.length; i++) gray[i] = Math.round(gray[i] / step) * step;
-      }
-      for (let i = 0; i < gray.length; i++) {
-        const v = clamp(gray[i]);
-        const idx = i * 4;
-        data[idx] = data[idx + 1] = data[idx + 2] = v;
-      }
-    }
 
-    function clamp(v) { return Math.max(0, Math.min(255, Math.round(v))); }
-
-    function applyInvert(imageData) {
-      const data = imageData.data;
-      for (let i = 0; i < data.length; i += 4) {
-        data[i] = 255 - data[i];
-        data[i + 1] = 255 - data[i + 1];
-        data[i + 2] = 255 - data[i + 2];
-      }
-    }
-
-    function processImage(item) {
-      return new Promise((resolve) => {
-        const canvas = document.createElement('canvas');
-        canvas.width = WIDTH;
-        canvas.height = HEIGHT;
-        const ctx = canvas.getContext('2d');
-        drawFitted(ctx, item.img, item.fit);
-        const imageData = ctx.getImageData(0, 0, WIDTH, HEIGHT);
-        applyContrast(imageData, item.contrast);
-        if (item.invert === 'on') applyInvert(imageData);
-        applyPosterize(imageData, item.posterize);
-        resolve(createBMP(imageData));
-      });
-    }
-
-    function downloadBlob(blob, filename) {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
-
-    function createBMP(imageData) {
-      const w = WIDTH, h = HEIGHT;
-      const rowSize = Math.ceil(w * 3 / 4) * 4;
-      const pixelDataSize = rowSize * h;
-      const headerSize = 54;
-      const fileSize = headerSize + pixelDataSize;
-      const buffer = new ArrayBuffer(fileSize);
-      const view = new DataView(buffer);
-      view.setUint8(0, 0x42); view.setUint8(1, 0x4D);
-      view.setUint32(2, fileSize, true);
-      view.setUint32(6, 0, true);
-      view.setUint32(10, headerSize, true);
-      view.setUint32(14, 40, true);
-      view.setInt32(18, w, true);
-      view.setInt32(22, -h, true);
-      view.setUint16(26, 1, true);
-      view.setUint16(28, 24, true);
-      view.setUint32(30, 0, true);
-      view.setUint32(34, pixelDataSize, true);
-      view.setUint32(38, 2835, true);
-      view.setUint32(42, 2835, true);
-      view.setUint32(46, 0, true);
-      view.setUint32(50, 0, true);
-      const data = imageData.data;
-      let offset = headerSize;
-      for (let y = 0; y < h; y++) {
-        const rowStart = offset;
-        for (let x = 0; x < w; x++) {
-          const i = (y * w + x) * 4;
-          view.setUint8(offset++, data[i + 2]);
-          view.setUint8(offset++, data[i + 1]);
-          view.setUint8(offset++, data[i]);
+        statusEl.textContent = "Creating ZIP...";
+        try {
+          const zipBlob = await zip.generateAsync({ type: "blob" });
+          const timestamp = formatTimestamp(new Date());
+          downloadBlob(zipBlob, `xteink_images_${timestamp}.zip`);
+          statusEl.textContent = `Done! Downloaded ${queue.length} images as ZIP.`;
+        } catch (err) {
+          statusEl.className = "status visible error";
+          statusEl.textContent = `Error creating ZIP: ${err.message}`;
         }
-        const padding = rowSize - (offset - rowStart);
-        for (let p = 0; p < padding; p++) view.setUint8(offset++, 0);
-      }
-      return new Blob([buffer], { type: 'image/bmp' });
-    }
+        convertAllBtn.disabled = false;
+      };
 
-    // Initialize hero after all functions are defined
-    initHeroCanvas();
-  </script>
-</body>
+      function drawFitted(
+        ctx,
+        img,
+        fit,
+        cropX = 0.5,
+        cropY = 0.5,
+        cropZoom = 1,
+      ) {
+        const srcRatio = img.width / img.height;
+        const dstRatio = WIDTH / HEIGHT;
+        if (fit === "crop") {
+          let sw, sh;
+          // Calculate base crop size (what fills the frame)
+          if (srcRatio > dstRatio) {
+            sh = img.height;
+            sw = img.height * dstRatio;
+          } else {
+            sw = img.width;
+            sh = img.width / dstRatio;
+          }
+          // Apply zoom (zoom in = smaller source area)
+          sw = sw / cropZoom;
+          sh = sh / cropZoom;
+          // Calculate position based on cropX/cropY
+          const maxSx = img.width - sw;
+          const maxSy = img.height - sh;
+          const sx = maxSx * cropX;
+          const sy = maxSy * cropY;
+          ctx.drawImage(img, sx, sy, sw, sh, 0, 0, WIDTH, HEIGHT);
+        } else if (fit === "letterbox-white" || fit === "letterbox-black") {
+          ctx.fillStyle = fit === "letterbox-white" ? "#fff" : "#000";
+          ctx.fillRect(0, 0, WIDTH, HEIGHT);
+          let dw, dh, dx, dy;
+          if (srcRatio > dstRatio) {
+            dw = WIDTH;
+            dh = WIDTH / srcRatio;
+            dx = 0;
+            dy = (HEIGHT - dh) / 2;
+          } else {
+            dh = HEIGHT;
+            dw = HEIGHT * srcRatio;
+            dx = (WIDTH - dw) / 2;
+            dy = 0;
+          }
+          ctx.drawImage(img, dx, dy, dw, dh);
+        } else if (fit === "stretch") {
+          ctx.drawImage(img, 0, 0, WIDTH, HEIGHT);
+        }
+      }
+
+      function applyContrast(imageData, amount) {
+        if (amount === 0) return;
+        const data = imageData.data;
+        const factor = (259 * (amount + 255)) / (255 * (259 - amount));
+        for (let i = 0; i < data.length; i += 4) {
+          data[i] = clamp(factor * (data[i] - 128) + 128);
+          data[i + 1] = clamp(factor * (data[i + 1] - 128) + 128);
+          data[i + 2] = clamp(factor * (data[i + 2] - 128) + 128);
+        }
+      }
+
+      function applyPosterize(imageData, mode) {
+        if (mode === "off") return;
+        const data = imageData.data;
+        const dither = mode.endsWith("d");
+        const shades = parseInt(mode);
+        const step = 255 / (shades - 1);
+        const gray = new Float32Array(WIDTH * HEIGHT);
+        for (let i = 0; i < gray.length; i++) {
+          const idx = i * 4;
+          gray[i] =
+            0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
+        }
+        if (dither) {
+          for (let y = 0; y < HEIGHT; y++) {
+            for (let x = 0; x < WIDTH; x++) {
+              const i = y * WIDTH + x;
+              const oldVal = gray[i];
+              const newVal = Math.round(oldVal / step) * step;
+              gray[i] = newVal;
+              const error = oldVal - newVal;
+              if (x + 1 < WIDTH) gray[i + 1] += (error * 7) / 16;
+              if (y + 1 < HEIGHT) {
+                if (x > 0) gray[i + WIDTH - 1] += (error * 3) / 16;
+                gray[i + WIDTH] += (error * 5) / 16;
+                if (x + 1 < WIDTH) gray[i + WIDTH + 1] += (error * 1) / 16;
+              }
+            }
+          }
+        } else {
+          for (let i = 0; i < gray.length; i++)
+            gray[i] = Math.round(gray[i] / step) * step;
+        }
+        for (let i = 0; i < gray.length; i++) {
+          const v = clamp(gray[i]);
+          const idx = i * 4;
+          data[idx] = data[idx + 1] = data[idx + 2] = v;
+        }
+      }
+
+      function clamp(v) {
+        return Math.max(0, Math.min(255, Math.round(v)));
+      }
+
+      function applyInvert(imageData) {
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          data[i] = 255 - data[i];
+          data[i + 1] = 255 - data[i + 1];
+          data[i + 2] = 255 - data[i + 2];
+        }
+      }
+
+      function processImage(item) {
+        return new Promise((resolve) => {
+          const canvas = document.createElement("canvas");
+          canvas.width = WIDTH;
+          canvas.height = HEIGHT;
+          const ctx = canvas.getContext("2d");
+          drawFitted(
+            ctx,
+            item.img,
+            item.fit,
+            item.cropX,
+            item.cropY,
+            item.cropZoom,
+          );
+          const imageData = ctx.getImageData(0, 0, WIDTH, HEIGHT);
+          applyContrast(imageData, item.contrast);
+          if (item.invert === "on") applyInvert(imageData);
+          applyPosterize(imageData, item.posterize);
+          resolve(createBMP(imageData));
+        });
+      }
+
+      function downloadBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
+      function createBMP(imageData) {
+        const w = WIDTH,
+          h = HEIGHT;
+        const rowSize = Math.ceil((w * 3) / 4) * 4;
+        const pixelDataSize = rowSize * h;
+        const headerSize = 54;
+        const fileSize = headerSize + pixelDataSize;
+        const buffer = new ArrayBuffer(fileSize);
+        const view = new DataView(buffer);
+        view.setUint8(0, 0x42);
+        view.setUint8(1, 0x4d);
+        view.setUint32(2, fileSize, true);
+        view.setUint32(6, 0, true);
+        view.setUint32(10, headerSize, true);
+        view.setUint32(14, 40, true);
+        view.setInt32(18, w, true);
+        view.setInt32(22, -h, true);
+        view.setUint16(26, 1, true);
+        view.setUint16(28, 24, true);
+        view.setUint32(30, 0, true);
+        view.setUint32(34, pixelDataSize, true);
+        view.setUint32(38, 2835, true);
+        view.setUint32(42, 2835, true);
+        view.setUint32(46, 0, true);
+        view.setUint32(50, 0, true);
+        const data = imageData.data;
+        let offset = headerSize;
+        for (let y = 0; y < h; y++) {
+          const rowStart = offset;
+          for (let x = 0; x < w; x++) {
+            const i = (y * w + x) * 4;
+            view.setUint8(offset++, data[i + 2]);
+            view.setUint8(offset++, data[i + 1]);
+            view.setUint8(offset++, data[i]);
+          }
+          const padding = rowSize - (offset - rowStart);
+          for (let p = 0; p < padding; p++) view.setUint8(offset++, 0);
+        }
+        return new Blob([buffer], { type: "image/bmp" });
+      }
+
+      // Initialize hero after all functions are defined
+      initHeroCanvas();
+    </script>
+  </body>
 </html>
